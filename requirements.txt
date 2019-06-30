@@ -1,3 +1,6 @@
 pip-chill==0.1.8
 psycopg2-binary==2.8.2
 pytelegrambotapi==3.6.6
+tzwhere==3.0.3
+pytz==2019.1
+timeloop==1.0.2
