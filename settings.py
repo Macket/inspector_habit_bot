@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # --- ALL ---
-DEBUG = bool(os.getenv('DEBUG'))
+DEBUG = os.getenv('DEBUG') == 'True'
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 ADMIN_ID = int(os.getenv('ADMIN_ID'))
 
