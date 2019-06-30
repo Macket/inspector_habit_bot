@@ -1,17 +1,14 @@
 from datetime import datetime, timedelta
 import pytz
+import settings
 from utils.database import execute_database_command
 from checks.utils import CheckStatus
-from utils.conf import ConfigParser
-
-
-config = ConfigParser()
 
 
 def fill_database_with_test_data():
     execute_database_command(f'''INSERT INTO users (id, username, first_name, last_name, timezone, language_code, is_active)
     VALUES (
-    {config.get('admin', 'id')},
+    {settings.ADMIN_ID},
     'Ivan',
     '',
     '',
@@ -22,7 +19,7 @@ def fill_database_with_test_data():
 
     execute_database_command(f'''INSERT INTO habits (user_id, label, question, days_of_week, time_array, fine)
     VALUES (
-    {config.get('admin', 'id')},
+    {settings.ADMIN_ID},
     'Не залипать',
     '',
     '[0, 1]',

@@ -4,3 +4,4 @@ pytelegrambotapi==3.6.6
 tzwhere==3.0.3
 pytz==2019.1
 timeloop==1.0.2
+python-dotenv==0.10.3

@@ -1,7 +1,8 @@
 import telebot
-from utils.conf import ConfigParser
+import settings
 
-config = ConfigParser()
 
-telebot.apihelper.proxy = {'https': config.get('telegram', 'proxy')}
-bot = telebot.TeleBot(config.get('telegram', 'token'))
+if settings.DEBUG:
+    telebot.apihelper.proxy = {'https': settings.PROXY}
+
+bot = telebot.TeleBot(settings.BOT_TOKEN)

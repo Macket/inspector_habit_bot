@@ -1,5 +1,5 @@
 import psycopg2
-from .conf import ConfigParser
+import settings
 from users.db_commands import DROP_USERS_TABLE, CREATE_USERS_TABLE
 from habits.db_commands import DROP_HABITS_TABLE, CREATE_HABITS_TABLE
 from checks.db_commands import DROP_CHECKS_TABLE, CREATE_CHECKS_TABLE
@@ -9,9 +9,10 @@ def execute_database_command(command, args=None):
     conn = None
     results = []
     try:
-        config = ConfigParser()
-        dbname, user, password, host = config.get_section('database').values()
-        conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host)
+        if settings.DEBUG:
+            conn = psycopg2.connect(dbname=settings.DB_NAME, user=settings.DB_USER, password=settings.DB_PASSWORD, host=settings.DB_HOST)
+        else:
+            conn = psycopg2.connect(settings.DATABASE_URL, sslmode='require')
         cur = conn.cursor()
         cur.execute(command, args)
         try:
@@ -31,6 +32,10 @@ def execute_database_command(command, args=None):
 
 
 def init_database():
-    for command in [DROP_CHECKS_TABLE, DROP_HABITS_TABLE, DROP_USERS_TABLE, CREATE_USERS_TABLE, CREATE_HABITS_TABLE, CREATE_CHECKS_TABLE]:
+    if settings.DEBUG:
+        commands = [DROP_CHECKS_TABLE, DROP_HABITS_TABLE, DROP_USERS_TABLE, CREATE_USERS_TABLE, CREATE_HABITS_TABLE, CREATE_CHECKS_TABLE]
+    else:
+        commands = [CREATE_USERS_TABLE, CREATE_HABITS_TABLE, CREATE_CHECKS_TABLE]
+    for command in commands:
         execute_database_command(command)
     print('bot has been started')
