@@ -22,13 +22,18 @@ class Check:
     def save(self):
         if Check.get(self.id):
             execute_database_command(
-                'UPDATE checks SET habit_id = %s, datetime_native = %s, datetime_utc = %s, status = %s WHERE id = %s',
-                (self.habit_id, self.datetime_native, self.datetime_utc, self.status, self.id)
+                f'UPDATE checks SET '
+                f'habit_id = %s,'
+                f'''datetime_native = '{self.datetime_native}','''
+                f'''datetime_utc = '{self.datetime_utc}','''
+                f'status = %s WHERE id = %s',
+                (self.habit_id, self.status, self.id)
             )
         else:
             check_id = execute_database_command(
-                'INSERT INTO checks (habit_id, datetime_native, datetime_utc, status) VALUES (%s, %s, %s, %s) RETURNING id;',
-                (self.habit_id, self.datetime_native, self.datetime_utc, self.status))[0][0][0]
+                'INSERT INTO checks (habit_id, datetime_native, datetime_utc, status) '
+                f'''VALUES (%s, '{self.datetime_native}', '{self.datetime_utc}', %s) RETURNING id;''',
+                (self.habit_id, self.status))[0][0][0]
             return Check(self.habit_id, self.datetime_native, self.datetime_utc, self.status, check_id)
     #
     # def __str__(self):
