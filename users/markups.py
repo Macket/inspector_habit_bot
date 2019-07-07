@@ -3,6 +3,36 @@ from users.data import preparing_habits
 from users.models import User
 
 
+def get_main_menu_markup(user_id):
+    user = User.get(user_id)
+    ru_markup = types.ReplyKeyboardMarkup(row_width=1)
+    ru_markup.add(
+        types.KeyboardButton('🎯 Новая привычка'),
+        types.KeyboardButton('🗓 Мои привычки'),
+        types.KeyboardButton('✉️ Написать разработчикам'),
+    )
+    en_markup = types.ReplyKeyboardMarkup(row_width=1)
+    en_markup.add(
+        types.KeyboardButton('🎯 New habit'),
+        types.KeyboardButton('🗓 My habits'),
+        types.KeyboardButton('✉️ Contact developers'),
+    )
+    markup = ru_markup if user.language_code == 'ru' else en_markup
+
+    return markup
+
+
+def get_cancel_markup(user_id):
+    user = User.get(user_id)
+    ru_markup = types.ReplyKeyboardMarkup()
+    ru_markup.add(types.KeyboardButton('❌ Отмена'))
+    en_markup = types.ReplyKeyboardMarkup()
+    en_markup.add(types.KeyboardButton('❌ Cancel'))
+    markup = ru_markup if user.language_code == 'ru' else en_markup
+
+    return markup
+
+
 def get_habits_markup(user_id):
     user = User.get(user_id)
 

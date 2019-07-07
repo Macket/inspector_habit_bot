@@ -1,10 +1,13 @@
 import time
+import datetime
+from timeloop import Timeloop
 from bot import bot
 from users import intro
+from users import new_habit
+from users import contact_developers
+from habits import handlers
 from utils.database import init_database
-from timeloop import Timeloop
 from checks.check_users import check_users
-import datetime
 
 
 tl = Timeloop()

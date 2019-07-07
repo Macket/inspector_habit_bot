@@ -6,3 +6,11 @@ class CheckStatus(Enum):
     CHECKING = 'CHECKING'
     SUCCESS = 'SUCCESS'
     FAIL = 'FAIL'
+
+
+status_icons = {
+    'PENDING': '🔲',
+    'CHECKING': '🔲',
+    'SUCCESS': '✔',
+    'FAIL': '️✖️',
+}
