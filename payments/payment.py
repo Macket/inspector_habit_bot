@@ -4,7 +4,7 @@ import settings
 
 
 provider_token = settings.PROVIDER_TOKEN
-prices = [LabeledPrice(label='Working Time Machine', amount=50)]
+prices = [LabeledPrice(label='Working Time Machine', amount=100)]
 
 
 @bot.message_handler(commands=['pay'])
