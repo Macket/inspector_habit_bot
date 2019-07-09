@@ -13,11 +13,13 @@ from users.data import preparing_habits
 
 @bot.message_handler(commands=['start'])
 def register(message):
+    referrer = message.text[7:] if message.text[7:] else None
     user = User(message.chat.id,
                 username=message.from_user.username,
                 first_name=message.from_user.first_name,
                 last_name=message.from_user.last_name,
                 language_code=message.from_user.language_code,
+                referrer=referrer,
                 )
     user.save()
 
