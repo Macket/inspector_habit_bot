@@ -6,6 +6,7 @@ from users import intro
 from users import new_habit
 from users import contact_developers
 from habits import handlers
+from payments import pyment
 from utils.database import init_database
 from checks.check_users import check_users
 

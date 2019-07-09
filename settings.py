@@ -7,6 +7,7 @@ load_dotenv()
 DEBUG = os.getenv('DEBUG') == 'True'
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 ADMIN_ID = int(os.getenv('ADMIN_ID'))
+PROVIDER_TOKEN = os.getenv('PROVIDER_TOKEN')
 
 # --- ONLY PROD ---
 DATABASE_URL=os.getenv('DATABASE_URL')
