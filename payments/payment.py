@@ -33,6 +33,7 @@ def command_pay(message):
 
 @bot.pre_checkout_query_handler(func=lambda query: True)
 def checkout(pre_checkout_query):
+    print(pre_checkout_query)
     bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True,
                                   error_message="Aliens tried to steal your card's CVV, but we successfully protected your credentials,"
                                                 " try to pay again in a few minutes, we need a small rest.")
