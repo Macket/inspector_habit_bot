@@ -21,7 +21,7 @@ def command_pay(message):
                                  ' Order our Working Time Machine today!',
                      provider_token=provider_token,
                      currency='usd',
-                     photo_url='http://erkelzaar.tsudao.com/models/perrotta/TIME_MACHINE.jpg',
+                     photo_url='https://safety4sea.com/wp-content/uploads/2016/06/fine-e1522744870402.png',
                      photo_height=512,  # !=0/None or picture won't be shown
                      photo_width=512,
                      photo_size=512,
@@ -34,9 +34,7 @@ def command_pay(message):
 @bot.pre_checkout_query_handler(func=lambda query: True)
 def checkout(pre_checkout_query):
     print(pre_checkout_query)
-    bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True,
-                                  error_message="Aliens tried to steal your card's CVV, but we successfully protected your credentials,"
-                                                " try to pay again in a few minutes, we need a small rest.")
+    bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
 
 
 @bot.message_handler(content_types=['successful_payment'])
