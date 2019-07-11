@@ -1,0 +1,33 @@
+from telebot import types
+from users.models import User
+
+
+def get_punishment_markup(user_id):
+    user = User.get(user_id)
+    ru_punishments = ['💰 Оплата штрафов', '👥 Социальные работы']
+    en_punishments = ['💰 Pay fines', '👥 Social works']
+    punishments = ru_punishments if user.language_code == 'ru' else en_punishments
+
+    inline_markup = types.InlineKeyboardMarkup(row_width=1)
+
+    inline_markup.add(
+        types.InlineKeyboardButton(text=punishments[0], callback_data='@@PUNISHMENT/pay'),
+        types.InlineKeyboardButton(text=punishments[1], callback_data='@@PUNISHMENT/work'),
+    )
+
+    return inline_markup
+
+
+def get_social_work_markup(user_id):
+    user = User.get(user_id)
+    ru_button = 'Помочь другу'
+    en_button = 'Help friend'
+    button = ru_button if user.language_code == 'ru' else en_button
+
+    inline_markup = types.InlineKeyboardMarkup(row_width=1)
+
+    inline_markup.add(
+        types.InlineKeyboardButton(text=button, url=f'https://t.me/BotoKatalabot?start={user_id}'),
+    )
+
+    return inline_markup
