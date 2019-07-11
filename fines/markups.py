@@ -1,5 +1,6 @@
 from telebot import types
 from users.models import User
+import settings
 
 
 def get_punishment_markup(user_id):
@@ -26,8 +27,10 @@ def get_social_work_markup(user_id):
 
     inline_markup = types.InlineKeyboardMarkup(row_width=1)
 
+    url = f'https://t.me/BotoKatalabot?start={user_id}' if settings.DEBUG \
+        else f'https://t.me/inspector_habit_bot?start={user_id}'
     inline_markup.add(
-        types.InlineKeyboardButton(text=button, url=f'https://t.me/BotoKatalabot?start={user_id}'),
+        types.InlineKeyboardButton(text=button, url=url),
     )
 
     return inline_markup
