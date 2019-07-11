@@ -14,7 +14,7 @@ def command_pay(message):
     bot.send_invoice(message.chat.id, title='Оплата штрафов',
                      description='',
                      provider_token=provider_token,
-                     currency='usd',
+                     currency='uah',
                      photo_url='https://safety4sea.com/wp-content/uploads/2016/06/fine-e1522744870402.png',
                      photo_height=512,  # !=0/None or picture won't be shown
                      photo_width=512,
