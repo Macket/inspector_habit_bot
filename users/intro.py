@@ -9,6 +9,7 @@ from users.utils import get_schedule
 from checks.models import Check
 from habits.models import Habit
 from users.data import preparing_habits
+from checks.utils import CheckStatus
 
 
 @bot.message_handler(commands=['start'])
@@ -241,7 +242,6 @@ def promise_receive(message):
     en_text = 'You are a brave man. Good luck!'
     text = ru_text if user.language_code == 'ru' else en_text
 
-    print(preparing_habits)
     schedule_native, schedule_utc = get_schedule(
         preparing_habits[message.chat.id]['days_of_week'],
         preparing_habits[message.chat.id]['time_array'],
@@ -256,4 +256,21 @@ def promise_receive(message):
         Check(habit.id, check_native, check_utc).save()
     del preparing_habits[message.chat.id]
 
-    bot.send_message(message.chat.id, text, reply_markup=types.ReplyKeyboardRemove())
+    if user.referrer:
+        referrer = User.get(user.referrer)
+        referrer.satisfy_fines(CheckStatus.WORKED.name)
+
+        ru_text_ref = f'{user.first_name + " " + user.last_name if user.first_name else "Ваш друг"} ' \
+                  f'назначил свою первую привычку. За успешно проведённые социальные работы ' \
+                  f'с вас снимаются все обвинения и ваши штрафы аннулируются.'
+        en_text_ref = f'{user.first_name + user.last_name if user.first_name else "Your friend"} ' \
+                  f'has assigned his first habit. For successful social work all charges ' \
+                  f'against you and your fines are canceled.'
+        text_ref = ru_text_ref if referrer.language_code == 'ru' else en_text_ref
+
+        try:
+            bot.send_message(referrer.id, text_ref)
+        except Exception as e:
+            print(e)
+
+    bot.send_message(message.chat.id, text, reply_markup=markups.get_main_menu_markup(message.chat.id))
