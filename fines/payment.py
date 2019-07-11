@@ -10,7 +10,7 @@ provider_token = settings.PROVIDER_TOKEN
 
 @bot.message_handler(commands=['buy'])
 def command_pay(message):
-    prices = [LabeledPrice(label='Working Time Machine', amount=200)]
+    prices = [LabeledPrice(label='Working Time Machine', amount=500)]
     bot.send_invoice(message.chat.id, title='Оплата штрафов',
                      description='Test',
                      provider_token=provider_token,
