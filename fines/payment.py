@@ -12,7 +12,7 @@ provider_token = settings.PROVIDER_TOKEN
 def command_pay(message):
     prices = [LabeledPrice(label='Working Time Machine', amount=200)]
     bot.send_invoice(message.chat.id, title='Оплата штрафов',
-                     description='',
+                     description='Test',
                      provider_token=provider_token,
                      currency='uah',
                      photo_url='https://safety4sea.com/wp-content/uploads/2016/06/fine-e1522744870402.png',
