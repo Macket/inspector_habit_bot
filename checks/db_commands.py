@@ -5,7 +5,7 @@ DROP_CHECKS_TABLE = """
 CREATE_CHECKS_TABLE = """
        CREATE TABLE checks (
            id BIGSERIAL PRIMARY KEY,
-           habit_id INTEGER,
+           habit_id BIGINT,
            datetime_native TIMESTAMP,
            datetime_utc TIMESTAMP,
            status VARCHAR(15),

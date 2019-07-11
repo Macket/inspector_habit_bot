@@ -5,7 +5,7 @@ DROP_HABITS_TABLE = """
 CREATE_HABITS_TABLE = """
        CREATE TABLE habits (
        id BIGSERIAL PRIMARY KEY,
-       user_id INTEGER,
+       user_id BIGINT,
        label VARCHAR(255),
        question VARCHAR(255),
        days_of_week VARCHAR(15),
