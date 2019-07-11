@@ -1,6 +1,8 @@
 from bot import bot
 from utils.database import execute_database_command
 from checks.utils import status_icons
+from users.markups import get_main_menu_markup
+
 
 @bot.message_handler(func=lambda message:
 message.text in ['🗓 Мои привычки', '🗓 My habits'], content_types=['text'])
@@ -23,4 +25,4 @@ def user_habits(message):
     for habit in habits.values():
         report += f'*{habit["label"]}*\n{" ".join(habit["checks"])}\n\n'
 
-    bot.send_message(message.chat.id, text=report, parse_mode='Markdown')
+    bot.send_message(message.chat.id, text=report, parse_mode='Markdown', reply_markup=get_main_menu_markup(message.chat.id))
