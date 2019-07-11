@@ -1,5 +1,6 @@
 import abc
 from utils.database import execute_database_command
+from checks.utils import CheckStatus
 
 
 class User:
@@ -32,6 +33,19 @@ class User:
                 'INSERT INTO users (id, username, first_name, last_name, timezone, language_code, is_active, referrer)  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
                 (self.id, self.username, self.first_name, self.last_name, self.timezone, self.language_code, self.is_active, self.referrer)
             )
+
+    def get_fines(self):
+        res = execute_database_command(
+            'SELECT h.label, c.datetime_native, h.fine FROM checks c JOIN habits h ON c.habit_id = h.id WHERE c.status = %s AND h.user_id = %s;',
+            (CheckStatus.FAIL.name, self.id)
+        )[0]
+        return res
+
+    def satisfy_fines(self, satisfaction_type):
+        execute_database_command(
+            'UPDATE checks SET status = %s FROM habits WHERE habits.id = checks.habit_id AND habits.user_id = %s AND checks.status = %s;',
+            (satisfaction_type, self.id, CheckStatus.FAIL.name)
+        )
 
     def __str__(self):
         return f'{self.username if self.username else "No name"} (id: {self.id})'

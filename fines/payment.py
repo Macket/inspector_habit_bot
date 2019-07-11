@@ -10,15 +10,8 @@ prices = [LabeledPrice(label='Working Time Machine', amount=200)]
 
 @bot.message_handler(commands=['buy'])
 def command_pay(message):
-    bot.send_message(message.chat.id,
-                     "Real cards won't work with me, no money will be debited from your account."
-                     " Use this test card number to pay for your Time Machine: `4242 4242 4242 4242`"
-                     "\n\nThis is your demo invoice:", parse_mode='Markdown')
-    bot.send_invoice(message.chat.id, title='Working Time Machine',
-                     description='Want to visit your great-great-great-grandparents?'
-                                 ' Make a fortune at the races?'
-                                 ' Shake hands with Hammurabi and take a stroll in the Hanging Gardens?'
-                                 ' Order our Working Time Machine today!',
+    bot.send_invoice(message.chat.id, title='Оплата штрафов',
+                     description='',
                      provider_token=provider_token,
                      currency='usd',
                      photo_url='https://safety4sea.com/wp-content/uploads/2016/06/fine-e1522744870402.png',
@@ -27,8 +20,8 @@ def command_pay(message):
                      photo_size=512,
                      is_flexible=False,  # True If you need to set up Shipping Fee
                      prices=prices,
-                     start_parameter='time-machine-example',
-                     invoice_payload='HAPPY FRIDAYS COUPON')
+                     start_parameter='fines-payment',
+                     invoice_payload='FINES PAYMENT')
 
 
 @bot.pre_checkout_query_handler(func=lambda query: True)
