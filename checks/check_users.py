@@ -7,6 +7,7 @@ from checks.models import Check
 from habits.models import Habit
 from checks.utils import CheckStatus
 from checks import markups
+from fines.handlers import user_violations
 import ast
 
 
@@ -59,14 +60,15 @@ def handle_check_query(call):
 
         bot.send_message(call.message.chat.id, text)
     else:
-        fine = Habit.get(check.habit_id).fine
-        user = User.get(call.message.chat.id)
-        ru_text = f'Вам назначен штраф в размере 💲{fine}.\n\n' \
-                  f'К сожалению, ко мне ещё не подключена платёжная система. ' \
-                  f'Как только это будет сделано, я отправлю вам счёт на оплату штрафа.'
-        en_text = f'You are fined 💲{fine}.\n\n' \
-                  f'Unfortunately, the payment system is not connected to me yet. ' \
-                  f'Once this is done, I will send you a bill to pay the fine.'
-        text = ru_text if user.language_code == 'ru' else en_text
-
-        bot.send_message(call.message.chat.id, text)
+        user_violations(call.message)
+        # fine = Habit.get(check.habit_id).fine
+        # user = User.get(call.message.chat.id)
+        # ru_text = f'Вам назначен штраф в размере 💲{fine}.\n\n' \
+        #           f'К сожалению, ко мне ещё не подключена платёжная система. ' \
+        #           f'Как только это будет сделано, я отправлю вам счёт на оплату штрафа.'
+        # en_text = f'You are fined 💲{fine}.\n\n' \
+        #           f'Unfortunately, the payment system is not connected to me yet. ' \
+        #           f'Once this is done, I will send you a bill to pay the fine.'
+        # text = ru_text if user.language_code == 'ru' else en_text
+        #
+        # bot.send_message(call.message.chat.id, text)
