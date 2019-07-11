@@ -9,12 +9,14 @@ def get_main_menu_markup(user_id):
     ru_markup.add(
         types.KeyboardButton('🎯 Новая привычка'),
         types.KeyboardButton('🗓 Мои привычки'),
+        types.KeyboardButton('❗️ Мои нарушения'),
         types.KeyboardButton('✉️ Написать разработчикам'),
     )
     en_markup = types.ReplyKeyboardMarkup(row_width=1)
     en_markup.add(
         types.KeyboardButton('🎯 New habit'),
         types.KeyboardButton('🗓 My habits'),
+        types.KeyboardButton('❗ My violations'),
         types.KeyboardButton('✉️ Contact developers'),
     )
     markup = ru_markup if user.language_code == 'ru' else en_markup
