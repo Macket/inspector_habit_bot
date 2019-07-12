@@ -238,10 +238,6 @@ def promise_request(message):
 def promise_receive(message):
     user = User.get(message.chat.id)
 
-    ru_text = 'Вы смелый человек. Удачи!'
-    en_text = 'You are a brave man. Good luck!'
-    text = ru_text if user.language_code == 'ru' else en_text
-
     schedule_native, schedule_utc = get_schedule(
         preparing_habits[message.chat.id]['days_of_week'],
         preparing_habits[message.chat.id]['time_array'],
@@ -260,17 +256,26 @@ def promise_receive(message):
         referrer = User.get(user.referrer)
         referrer.satisfy_fines(CheckStatus.WORKED.name)
 
-        ru_text_ref = f'{user.first_name + " " + user.last_name if user.first_name else "Ваш друг"} ' \
-                  f'назначил свою первую привычку. За успешно проведённые социальные работы ' \
-                  f'с вас снимаются все обвинения и ваши штрафы аннулируются.'
-        en_text_ref = f'{user.first_name + user.last_name if user.first_name else "Your friend"} ' \
-                  f'has assigned his first habit. For successful social work all charges ' \
-                  f'against you and your fines are canceled.'
+        referral_name = ''
+        if user.first_name:
+            referral_name = user.first_name
+            if user.last_name:
+                referral_name = user.first_name + ' ' + user.last_name
+
+        ru_text_ref = f'{referral_name if referral_name else "Ваш друг"} ' \
+                      f'назначил свою первую привычку. ' \
+                      f'За успешно проведённые социальные работы ' \
+                      f'с вас снимаются все обвинения и ваши штрафы аннулируются.'
+        en_text_ref = f'{referral_name if referral_name else "Your friend"} ' \
+                      f'has assigned his first habit. ' \
+                      f'For successful social work all charges ' \
+                      f'against you and your fines are canceled.'
         text_ref = ru_text_ref if referrer.language_code == 'ru' else en_text_ref
 
-        try:
-            bot.send_message(referrer.id, text_ref)
-        except Exception as e:
-            print(e)
+        bot.send_message(referrer.id, text_ref)
+
+    ru_text = 'Вы смелый человек. Удачи!'
+    en_text = 'You are a brave man. Good luck!'
+    text = ru_text if user.language_code == 'ru' else en_text
 
     bot.send_message(message.chat.id, text, reply_markup=markups.get_main_menu_markup(message.chat.id))
