@@ -26,6 +26,23 @@ def command_pay(message):
                      invoice_payload='FINES PAYMENT')
 
 
+@bot.message_handler(commands=['usd'])
+def command_pay(message):
+    prices = [LabeledPrice(label='Working Time Machine', amount=100)]
+    bot.send_invoice(message.chat.id, title='Оплата штрафов',
+                     description='Test',
+                     provider_token=provider_token,
+                     currency='usd',
+                     photo_url='https://safety4sea.com/wp-content/uploads/2016/06/fine-e1522744870402.png',
+                     photo_height=512,  # !=0/None or picture won't be shown
+                     photo_width=512,
+                     photo_size=512,
+                     is_flexible=False,  # True If you need to set up Shipping Fee
+                     prices=prices,
+                     start_parameter='fines-payment',
+                     invoice_payload='FINES PAYMENT')
+
+
 def send_invoice(user_id):
     user = User.get(user_id)
     violations = user.get_fines()
