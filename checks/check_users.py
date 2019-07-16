@@ -29,9 +29,12 @@ def check_users(last_check_utc):
                   f'Note that you will have to pay a fine for the answer "❌ No"'
         text = ru_text if user.language_code == 'ru' else en_text
 
-        bot.send_message(user_id,
-                         text,
-                         reply_markup=markups.get_check_inline_markup(user_id, check_id))
+        try:
+            bot.send_message(user_id,
+                             text,
+                             reply_markup=markups.get_check_inline_markup(user_id, check_id))
+        except Exception:
+            pass
     return now_utc
 
 
