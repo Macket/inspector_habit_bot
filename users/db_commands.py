@@ -13,6 +13,7 @@ CREATE_USERS_TABLE = """
            language_code VARCHAR(15),
            is_active BOOLEAN DEFAULT TRUE,
            referrer BIGINT DEFAULT NULL,
+           score INTEGER DEFAULT 0,
            FOREIGN KEY (referrer) REFERENCES users (id) ON DELETE SET NULL
        )
        """

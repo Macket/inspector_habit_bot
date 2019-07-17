@@ -1,6 +1,9 @@
 from bot import bot
 import datetime
 import pytz
+from utils.database import execute_database_command
+from checks.utils import CheckStatus
+from users.models import User
 
 
 def remove_markup(chat_id, message_id):
@@ -34,3 +37,24 @@ def get_schedule(week_days, time_array, timezone):
     schedule_native.sort()
     schedule_utc = [native_datetime.astimezone(pytz.utc) for native_datetime in schedule_native]
     return schedule_native, schedule_utc
+
+
+def score_users():
+    success_checks = execute_database_command('''SELECT h.user_id, h.fine FROM
+        checks c JOIN habits h ON c.habit_id = h.id 
+        WHERE  c.status=%s;
+        ''', (CheckStatus.SUCCESS.name, ))[0]
+    for success_check in success_checks:
+        u = User.get(success_check[0])
+        u.score += success_check[1]
+        u.save()
+
+    fail_checks = execute_database_command('''SELECT h.user_id, h.fine FROM
+            checks c JOIN habits h ON c.habit_id = h.id 
+            WHERE  c.status=%s;
+            ''', (CheckStatus.FAIL.name,))[0]
+    for fail_check in fail_checks:
+        u = User.get(fail_check[0])
+        u.score -= fail_check[1]
+        u.save()
+
