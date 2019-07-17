@@ -20,6 +20,7 @@ def register(message):
                 first_name=message.from_user.first_name,
                 last_name=message.from_user.last_name,
                 language_code=message.from_user.language_code,
+                timezone='UTC',
                 referrer=referrer,
                 )
     user.save()
