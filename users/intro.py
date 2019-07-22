@@ -33,22 +33,25 @@ def register(message):
 
 def greeting_and_habit_request(message):
     user = User.get(message.chat.id)
-    ru_text = f'Здравствуйте{", " + user.first_name if user.first_name else ""}! ' \
+    ru_text = f'Привет{", " + user.first_name if user.first_name else ""}! ' \
               f'Я Инспектор Хэбит, борец с мировой ленью и прокрастинацией. ' \
-              f'Под моим чутким надзором люди приобретают полезные привычки и избавляются от вредных.' \
-              f'\n\nВсё дело в том, что я знаю самый действенный способ! ' \
-              f'Давайте я покажу вам. Уверен, что у вас есть какая-нибудь вредная привычка, от которой никак ' \
-              f'не получается избавиться. Или же наоборот, вы давным-давно мечтаете ' \
-              f'выработать какую-нибудь полезную привычку? Напишите, чего бы вам хотелось, ' \
-              f'или выберите из списка.'
+              f'А ты, кажется, как раз испытваешь с этим определённые проблемы.\n\n' \
+              f'Короче, назначаешь себе привычку и обещаешь следовать ей, ' \
+              f'а я тебя буду проверять: держишь слово — красавчик, ' \
+              f'нарушаешь — ловишь денежный штраф. Размер штрафа выбираешь сам. ' \
+              f'И таким образом мы работаем 3 недели.\n\n' \
+              f'Всё ясно? Если да, то выбирай привычку из списка или пиши свою, ' \
+              f'если нет, то не трать моё время.'
 
     en_text = f'Hello{", " + user.first_name if user.first_name else ""}! ' \
               f'I am Inspector Habit, fighter with world laziness and procrastination. ' \
-              f'Under my strict control, people develop good habits and break bad habits.\n\n' \
-              f'The thing is, I know the most powerful way! ' \
-              f'Let me show you. I am sure that you have any bad habit you want to break.' \
-              f'Or, on the contrary, did you long ago want to develop some good habit? ' \
-              f'Write what you would like, or select from the list.'
+              f'And you seem to be experiencing certain problems with it.\n\n' \
+              f'In short, you assign yourself a habit and promise to follow it, ' \
+              f'and I will check you: keep your word - handsome, ' \
+              f'you break - you catch a fine. The size of the fine you choose. ' \
+              f'And so we work 3 weeks.\n\n' \
+              f'All clear? If yes, then choose a habit from the list or write your own, ' \
+              f"if not, don't waste my time."
 
     text = ru_text if user.language_code == 'ru' else en_text
 
@@ -59,7 +62,7 @@ def greeting_and_habit_request(message):
 def habit_response(message):
     user = User.get(message.chat.id)
 
-    ru_text = f'Итак, вы хотите *{message.text}*'
+    ru_text = f'Итак, ты  хочешь *{message.text}*'
     en_text = f'So you want *{message.text}*'
     text = ru_text if user.language_code == 'ru' else en_text
 
@@ -71,7 +74,7 @@ def habit_response(message):
 
 def language_request(message):
     bot.send_message(message.chat.id,
-                     '🇷🇺 Выберите язык, пожалуйста\n🇬🇧 Choose the language please',
+                     '🇷🇺 Выбери язык\n🇬🇧 Choose the language',
                      reply_markup=markups.get_languages_markup())
     bot.register_next_step_handler(message, language_response)
 
@@ -91,8 +94,8 @@ def language_response(message):
 def days_request(message):
     user = User.get(message.chat.id)
 
-    ru_text = 'Теперь давайте выберем дни недели, когда я буду приходить к вам с проверкой.'
-    en_text = "Now let's choose the days of the week when I will come to you with a check"
+    ru_text = 'Теперь выбери дни недели, когда я буду приходить к тебе с проверкой.'
+    en_text = "Now choose the days of the week when I will come to you with a check"
     text = ru_text if user.language_code == 'ru' else en_text
 
     bot.send_message(message.chat.id,
@@ -122,8 +125,8 @@ def handle_days_query(call):
 def time_request(message):
     user = User.get(message.chat.id)
 
-    ru_text = f'Отлично, выберите время проверки, например, *19:30*. ' \
-              f'Можете выбрать несколько проверок через пробел, например, *7:30 19:30*'
+    ru_text = f'Отлично, выбери время проверки, например, *19:30*. ' \
+              f'Можно выбрать несколько проверок через пробел, например, *7:30 19:30*'
     en_text = 'Good, choose a check time, for example, *19:30*. ' \
               'You can select multiple checks via space, for example, *7:30 19:30*'
     text = ru_text if user.language_code == 'ru' else en_text
@@ -152,7 +155,7 @@ def time_receive(message):
         check_days = re.sub(r'\s+', ' ', ' '.join(
             [day if day_of_week in preparing_habits[message.chat.id]['days_of_week'] else '' for day_of_week, day in enumerate(days)]))
 
-        ru_text = f'Хорошо, буду проверять вас в *{message.text}* по *{check_days}*.'
+        ru_text = f'Хорошо, я буду проверять тебя в *{message.text}* по *{check_days}*.'
         en_text = f"Okay, I'll check you at *{message.text}* on *{check_days}*"
         text = ru_text if user.language_code == 'ru' else en_text
 
@@ -162,8 +165,8 @@ def time_receive(message):
         location_request(message)
 
     except ValueError:
-        ru_text = 'Кажется, вы ввели что-то не то. Попробуйте ещё раз, используя формат *ЧЧ:ММ*.'
-        en_text = 'It seems you have entered something wrong. Try again using *HH:MM* format.'
+        ru_text = 'Кажется, ты ввёл какую-то ерунду. Попробуй ещё раз, используя формат *ЧЧ:ММ*.'
+        en_text = 'It seems you have entered some nonsense. Try again using *HH:MM* format.'
         text = ru_text if user.language_code == 'ru' else en_text
 
         bot.send_message(message.chat.id, text, parse_mode='Markdown')
@@ -173,8 +176,12 @@ def time_receive(message):
 def location_request(message):
     user = User.get(message.chat.id)
 
-    ru_text = 'Также мне нужно узнать, какой у вас часовой пояс, чтобы проводить проверки вовремя.'
-    en_text = 'I also need to find out what time zone you live in order to perform the checks on time.'
+    ru_text = 'Также мне нужно знать твой часовой пояс, чтобы проводить проверки вовремя.\n\n' \
+              'Только, пожалуйста, не надо тут разводить беспокойство о своих "персональных данных".' \
+              'Мне глубоко наплевать на твоё точное местоположение, просто так удобнее получить часовой пояс.'
+    en_text = 'I also need to find out what time zone you live in order to perform the checks on time.\n\n' \
+              "But please, don't worry about your “personal data”. " \
+              "I don't give a damn about your exact location, it's just more convenient to get a time zone."
     text = ru_text if user.language_code == 'ru' else en_text
 
     bot.send_message(message.chat.id, text, reply_markup=markups.get_location_markup(message.chat.id))
@@ -196,16 +203,10 @@ def location_receive(message):
 def fine_request(message):
     user = User.get(message.chat.id)
 
-    ru_text = f'И наконец, самое главное. Помните, я сказал, что знаю самый эффективный способ? ' \
-              f'Он заключается в том, что вы даёте обещание "{preparing_habits[message.chat.id]["label"]}" ' \
-              f'и получаете денежный штраф, каждый раз, когда нарушаете его в течение 3 недель. ' \
-              f'Благодаря такому подходу люди выполняют свои обещания в 3 раза чаще!\n\n' \
-              f'Какой штраф вы готовы заплатить за нарушение своего обещания?'
-    en_text = f'And finally, the most important thing. Remember, I said that I know the most effective way? ' \
-              f'It lies in the fact that you make a promise "{preparing_habits[message.chat.id]["label"]}" ' \
-              f'and get a monetary fine every time you break it over the next 3 weeks. ' \
-              f'Thanks to this approach, people fulfill their promises 3 times more often!\n\n' \
-              f'What fine are you willing to pay for breaking your promise?'
+    ru_text = 'Выбери размер штрафа. Только смотри не переборщи, ' \
+              'потому что платить придётся всякий раз, когда нарушишь обещание.'
+    en_text = 'Choose a fine. Just do not overdo, ' \
+              'because you have to pay every time you break a promise.'
     text = ru_text if user.language_code == 'ru' else en_text
 
     bot.send_message(message.chat.id, text, reply_markup=markups.get_fines_markup())
@@ -263,10 +264,10 @@ def promise_receive(message):
             if user.last_name:
                 referral_name = user.first_name + ' ' + user.last_name
 
-        ru_text_ref = f'{referral_name if referral_name else "Ваш друг"} ' \
+        ru_text_ref = f'{referral_name if referral_name else "Твой друг"} ' \
                       f'назначил свою первую привычку. ' \
                       f'За успешно проведённые социальные работы ' \
-                      f'с вас снимаются все обвинения и ваши штрафы аннулируются.'
+                      f'с тебя снимаются все обвинения и твои штрафы аннулируются.'
         en_text_ref = f'{referral_name if referral_name else "Your friend"} ' \
                       f'has assigned his first habit. ' \
                       f'For successful social work all charges ' \
@@ -275,8 +276,10 @@ def promise_receive(message):
 
         bot.send_message(referrer.id, text_ref)
 
-    ru_text = 'Вы смелый человек. Удачи!'
-    en_text = 'You are a brave man. Good luck!'
+    ru_text = 'Ну что ж, посмотрим, какой ты крутой. Удачи!'
+    en_text = "Well, let's see how cool you are. Good luck!"
     text = ru_text if user.language_code == 'ru' else en_text
 
     bot.send_message(message.chat.id, text, reply_markup=markups.get_main_menu_markup(message.chat.id))
+    bot.send_sticker(message.chat.id, 'CAADAgADWQIAAsY4fgsQX6OJTX_IOgI')
+

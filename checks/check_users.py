@@ -9,6 +9,20 @@ from checks.utils import CheckStatus
 from checks import markups
 from fines.handlers import user_violations
 import ast
+import random
+
+ru_success_phrases = ['Красавчик👍', 'Хорооош👍', 'Еееее', 'Крутяк😊', 'Капитальный красавчик👍',
+                      'А я уже было подумал, что ты лентяй😂', 'Лучший!!!', 'Так держать👍']
+en_success_phrases = ['Cool👍', 'You are pretty good👍', 'Yeah!!!', 'Best!',
+                      'And I already thought you were lazy😂', 'Keep it up👍']
+
+success_stickers = ['CAADAgADawIAAsY4fgsDhbjMBJlV4AI', 'CAADAgADugIAAsY4fgu4uDPJXXphTgI',
+                    'CAADAgADUgADYIltDBp238_XJHBwAg', 'CAADAgADFQkAAgi3GQLidaybScg8wwI',
+                    'CAADAgAD8wAEOKAKN5v1aQrj1EgC']
+
+fail_stickers = ['CAADAgADzwEAAvnkbAABsjFAs3iK3fgC', 'CAADAgADYQAD6u8-Cu07kxWOZDfKAg',
+                 'CAADAgADkAIAAsY4fgsQVTK1QgZFoQI', 'CAADAgADZwkAAnlc4gmuNXdMkJqu5wI',
+                 'CAADAgADuwEAAvFCvwUHymbGsZgiLQI']
 
 
 def check_users(last_check_utc):
@@ -23,8 +37,8 @@ def check_users(last_check_utc):
         c.save()
 
         user = User.get(user_id)
-        ru_text = f'Вы обещали "{label}". Вы выполняете своё обещание?\n\n' \
-                  f'Учтите, что за ответ "❌ Нет" нужно будет заплатить штраф'
+        ru_text = f'Ты обещал "{label}". Ты держишь своё слово?\n\n' \
+                  f'Учти, что за ответ "❌ Нет" нужно будет заплатить штраф'
         en_text = f'You promised "{label}". Are you keeping your promise?\n\n' \
                   f'Note that you will have to pay a fine for the answer "❌ No"'
         text = ru_text if user.language_code == 'ru' else en_text
@@ -64,21 +78,14 @@ def handle_check_query(call):
         user.score += habit.fine
         user.save()
 
-        ru_text = f'Отлично! Так держать👍\n\n*+{habit.fine} очков*'
-        en_text = f'Great! Keep it up👍 \n\n*+{habit.fine} points*'
+        ru_text = f'{random.choice(ru_success_phrases)}\n\n*+{habit.fine} очков*'
+        en_text = f'{random.choice(en_success_phrases)}\n\n*+{habit.fine} points*'
         text = ru_text if user.language_code == 'ru' else en_text
 
         bot.send_message(call.message.chat.id, text, parse_mode='Markdown')
+        bot.send_sticker(call.message.chat.id, random.choice(success_stickers))
     else:
-        user.score -= habit.fine
-        user.save()
-
-        ru_text = f'😭😭😭\n\n*-{habit.fine} очков*'
-        en_text = f'😭😭😭\n\n*-{habit.fine} points*'
-        text = ru_text if user.language_code == 'ru' else en_text
-
-        bot.send_message(call.message.chat.id, text, parse_mode='Markdown')
-
+        bot.send_sticker(call.message.chat.id, random.choice(fail_stickers))
         user_violations(call.message)
 
 
@@ -93,8 +100,8 @@ def take_points_from_debtors():
         u.score -= debtor[1]
         u.save()
 
-        ru_text = f'Ваш долг по штрафам составляет *${debtor[1]}*\n\n*-{debtor[1]} очков*'
-        en_text = f'Your debt on fines *${debtor[1]}*\n\n*-{debtor[1]} points*'
+        ru_text = f'Должникам по долгам их!\n\nТвой долг по штрафам составляет *${debtor[1]}*\n\n*-{debtor[1]} очков*'
+        en_text = f'Debtors must be punished!\n\nYour debt on fines *${debtor[1]}*\n\n*-{debtor[1]} points*'
         text = ru_text if u.language_code == 'ru' else en_text
 
         try:
@@ -113,7 +120,7 @@ def rate_users():
     for place, record in enumerate(rating, 1):
         u = User.get(record[0])
 
-        ru_text = f'Ваше место в рейтинге: *{place}/{total}*\n\n' \
+        ru_text = f'Твоё место в рейтинге: *{place}/{total}*\n\n' \
                   f'Количество очков: *{record[1]}*'
         en_text = f'Your place in rating *{place}/{total}*\n\n*' \
                   f'Score: *{record[1]}*'

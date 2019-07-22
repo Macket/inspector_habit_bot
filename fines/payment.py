@@ -86,7 +86,7 @@ def got_payment(message):
     user = User.get(message.chat.id)
     user.satisfy_fines(CheckStatus.PAID.name)
 
-    ru_text = 'Вы честный человек! Все штрафы погашены, все обвинения сняты.'
+    ru_text = '! Все штрафы погашены, все обвинения сняты.'
     en_text = 'You are an honest person! All fines repaid, all charges dropped.'
     text = ru_text if user.language_code == 'ru' else en_text
 

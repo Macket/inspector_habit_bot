@@ -19,17 +19,9 @@ def new_habit(message):
 
 def habit_request(message):
     user = User.get(message.chat.id)
-    ru_text = f'{user.first_name + ", я рад " if user.first_name else "Рад"}, ' \
-              f'что вы не останавливаетесь на достигнутом! ' \
-              f'Какую новую полезную привычку вы хотите приобрести? ' \
-              f'Или вы хотите избавиться от какой-нибудь вредной привычки?\n\n' \
-              f'Напишите или выберите из предложенных.'
+    ru_text = 'А ты любишь рисковать😁\n\nВыбери привычку из списка или напиши свою.'
 
-    en_text = f'{user.first_name + "," if user.first_name else ""}, ' \
-              f'I am glad that you do not stop there ' \
-              f'What new good habit would you like to develop? ' \
-              f'Or you want to break some bad habit?\n\n' \
-              f'Write or choose from the list.' \
+    en_text = 'Do you like to risk😁\n\nChoose a habit from the list or write your own.'
 
     text = ru_text if user.language_code == 'ru' else en_text
 
@@ -40,7 +32,7 @@ def habit_request(message):
 def habit_response(message):
     user = User.get(message.chat.id)
 
-    ru_text = f'Итак, вы хотите *{message.text}*'
+    ru_text = f'Итак, ты хочешь *{message.text}*'
     en_text = f'So you want *{message.text}*'
     text = ru_text if user.language_code == 'ru' else en_text
 
@@ -56,8 +48,8 @@ def habit_response(message):
 def days_request(message):
     user = User.get(message.chat.id)
 
-    ru_text = 'Теперь давайте выберем дни недели, когда я буду приходить к вам с проверкой.'
-    en_text = "Now let's choose the days of the week when I will come to you with a check"
+    ru_text = 'Теперь выбери дни недели, когда я буду приходить к тебе с проверкой.'
+    en_text = "Now choose the days of the week when I will come to you with a check"
     text = ru_text if user.language_code == 'ru' else en_text
 
     bot.send_message(message.chat.id,
@@ -87,8 +79,8 @@ def handle_days_query(call):
 def time_request(message):
     user = User.get(message.chat.id)
 
-    ru_text = f'Отлично, выберите время проверки, например, *19:30*. ' \
-              f'Можете выбрать несколько проверок через пробел, например, *7:30 19:30*'
+    ru_text = f'Отлично, выбери время проверки, например, *19:30*. ' \
+              f'Можно выбрать несколько проверок через пробел, например, *7:30 19:30*'
     en_text = 'Good, choose a check time, for example, *19:30*. ' \
               'You can select multiple checks via space, for example, *7:30 19:30*'
     text = ru_text if user.language_code == 'ru' else en_text
@@ -117,7 +109,7 @@ def time_receive(message):
         check_days = re.sub(r'\s+', ' ', ' '.join(
             [day if day_of_week in preparing_habits[message.chat.id]['days_of_week'] else '' for day_of_week, day in enumerate(days)]))
 
-        ru_text = f'Хорошо, буду проверять вас в *{message.text}* по *{check_days}*.'
+        ru_text = f'Хорошо, я буду проверять тебя в *{message.text}* по *{check_days}*.'
         en_text = f"Okay, I'll check you at *{message.text}* on *{check_days}*"
         text = ru_text if user.language_code == 'ru' else en_text
 
@@ -127,8 +119,8 @@ def time_receive(message):
         fine_request(message)
 
     except ValueError:
-        ru_text = 'Кажется, вы ввели что-то не то. Попробуйте ещё раз, используя формат *ЧЧ:ММ*.'
-        en_text = 'It seems you have entered something wrong. Try again using *HH:MM* format.'
+        ru_text = 'Кажется, ты ввёл какую-то ерунду. Попробуй ещё раз, используя формат *ЧЧ:ММ*.'
+        en_text = 'It seems you have entered some nonsense. Try again using *HH:MM* format.'
         text = ru_text if user.language_code == 'ru' else en_text
 
         bot.send_message(message.chat.id, text, parse_mode='Markdown')
@@ -138,8 +130,10 @@ def time_receive(message):
 def fine_request(message):
     user = User.get(message.chat.id)
 
-    ru_text = f'Назначьте себе штраф за нарушение обещания.'
-    en_text = f'Set yourself a fine for breaking the promise.'
+    ru_text = 'Выбери размер штрафа. Только смотри не переборщи, ' \
+              'потому что платить придётся всякий раз, когда нарушишь обещание.'
+    en_text = 'Choose a fine. Just do not overdo, ' \
+              'because you have to pay every time you break a promise.'
     text = ru_text if user.language_code == 'ru' else en_text
 
     bot.send_message(message.chat.id, text, reply_markup=markups.get_fines_markup())
@@ -173,11 +167,10 @@ def promise_request(message):
 def promise_receive(message):
     user = User.get(message.chat.id)
 
-    ru_text = 'Вы смелый человек. Удачи!'
-    en_text = 'You are a brave man. Good luck!'
+    ru_text = 'Ну что ж, посмотрим, какой ты крутой. Удачи!'
+    en_text = "Well, let's see how cool you are. Good luck!"
     text = ru_text if user.language_code == 'ru' else en_text
 
-    print(preparing_habits)
     schedule_native, schedule_utc = get_schedule(
         preparing_habits[message.chat.id]['days_of_week'],
         preparing_habits[message.chat.id]['time_array'],
