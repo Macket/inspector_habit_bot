@@ -7,12 +7,13 @@ from users import new_habit
 from users import contact_developers
 from habits import handlers
 from fines import payment, handlers
+from users.utils import get_sticker_id
 from utils.database import init_database
-from checks.check_users import check_users, take_points_from_debtors, rate_users
+from checks.check_users import check_users, take_points_from_debtors, rate_users, motivate_users_with_Jason_Statham
 
 
 tl = Timeloop()
-last_check_utc = datetime.datetime.strptime(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M"), "%Y-%m-%d %H:%M")  # поправить
+last_check_utc = datetime.datetime.strptime(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M"), "%Y-%m-%d %H:%M")  # TODO поправить
 
 
 @tl.job(interval=datetime.timedelta(minutes=1))
@@ -24,6 +25,11 @@ def check_users_job():
 @tl.job(interval=datetime.timedelta(days=1))
 def take_points_from_debtors_job():
     take_points_from_debtors()
+
+
+@tl.job(interval=datetime.timedelta(hours=20))
+def motivate_users_with_Jason_Statham_job():
+    motivate_users_with_Jason_Statham()
 
 
 @tl.job(interval=datetime.timedelta(days=1))

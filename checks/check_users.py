@@ -147,3 +147,61 @@ def rate_users():
             bot.send_message(u.id, text, parse_mode='Markdown')
         except Exception:
             pass
+
+
+Jason_Statham_sticker_pack = ['CAADBAADiAIAAoVpUQWeomfO2K5XagI',
+                              'CAADBAADuQIAAoVpUQVxWNshtJbFxwI',
+                              'CAADBAADjgIAAoVpUQWFTHDH5-5gLQI',
+                              'CAADBAADkwIAAoVpUQUWaJtDeSffxQI',
+                              'CAADBAADlQIAAoVpUQXTjabcb8sc5QI',
+                              'CAADBAADlwIAAoVpUQU_mDUvVNQrCgI',
+                              'CAADBAADnQIAAoVpUQUzSVrPUoUblQI',
+                              'CAADBAADnwIAAoVpUQUv6h29VDUm0wI',
+                              'CAADBAADoQIAAoVpUQUp6ATKJ0CCwgI',
+                              'CAADBAADowIAAoVpUQUe179jKBFMmAI',
+                              'CAADBAADpQIAAoVpUQX5pkA5Un8m9gI',
+                              'CAADBAADpwIAAoVpUQULoMsJeHJ5dQI',
+                              'CAADBAADqQIAAoVpUQV8lGGpxy7bLwI',
+                              'CAADBAADqwIAAoVpUQVnjHeRzWVcfgI',
+                              'CAADBAADrQIAAoVpUQWCbdLOmJiC2wI',
+                              'CAADBAADrwIAAoVpUQWj5VIseT0VmwI',
+                              'CAADBAADsQIAAoVpUQXeqyOsHpec8wI',
+                              'CAADBAADswIAAoVpUQWZdNjc6_LJNwI',
+                              'CAADBAADtQIAAoVpUQWcyMnP-eLZdgI',
+                              'CAADBAADtwIAAoVpUQWPap6lxRn7lgI',
+                              'CAADBAADuwIAAoVpUQWQWheljG3tRQI']
+
+Jason_Statham_quotes_ru = ['В любом процессе важна не скорость, а удовольствие.',
+                           'Не так важно, как тебя ударили, - важно, как ты встал и ответил.',
+                           'Если стараться обходить все неприятности, то можно пройти мимо всех удовольствий.',
+                           'Ты свободен, а значит, всерьёз за себя отвечаешь.',
+                           'Молчание - лучший способ ответа на бессмысленные вопросы.',
+                           'Тем, кого вдохновляют мои герои, не помешало бы лишний раз подумать.',
+                           'Живи в свое удовольствие, но не забывай про тех кто рядом.',
+                           'Будь самим собой, имей свою точку зрения, умей постоять за себя и за своих близких и тебя будут уважать.']
+
+Jason_Statham_quotes_en = ["I've come from nowhere, and I'm not shy to go back.",
+                           "You only get one shot in your life, and you might as well push yourself and try things.",
+                           "Revenge is a caustic thing. I say, breathe in, breathe deeply, let it go.",
+                           "How long you can continue to be good at something is how much you believe in yourself and how much hard work you do with the training.",
+                           "If you're going to do something, do it with style!",
+                           "Looking good and feeling good go hand in hand. If you have a healthy lifestyle, your diet and nutrition are set, and you're working out, you're going to feel good."]
+
+
+def motivate_users_with_Jason_Statham():
+    users = execute_database_command('SELECT id, language_code FROM users;')[0]
+
+    for user in users:
+        user_id = user[0]
+        language_code = user[1]
+
+        quote = random.choice(Jason_Statham_quotes_ru) + '\n\n*Джейсон Стэтхэм*' if language_code == 'ru' else \
+            random.choice(Jason_Statham_quotes_en) + '\n\n*Jason Statham*'
+
+        sticker = random.choice(Jason_Statham_sticker_pack)
+
+        try:
+            bot.send_message(user_id, quote, parse_mode='Markdown')
+            bot.send_sticker(user_id, sticker)
+        except Exception:
+            pass
