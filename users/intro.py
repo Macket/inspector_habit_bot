@@ -12,9 +12,11 @@ from users.data import preparing_habits
 from checks.utils import CheckStatus
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(func=lambda message: not message.text.startswith('/start judge'), commands=['start'])
 def register(message):
-    referrer = message.text[7:] if message.text[7:] else None
+    referrer = int(message.text[7:]) if message.text[7:] else None
+    if referrer == message.chat.id:
+        referrer = None
     user = User(message.chat.id,
                 username=message.from_user.username,
                 first_name=message.from_user.first_name,
@@ -31,6 +33,8 @@ def register(message):
         language_request(message)
 
 
+@bot.message_handler(func=lambda message:
+message.text in ['🗝 Зарегистрироваться', '🗝 Sign up'], content_types=['text'])
 def greeting_and_habit_request(message):
     user = User.get(message.chat.id)
     ru_text = f'Привет{", " + user.first_name if user.first_name else ""}! ' \

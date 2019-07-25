@@ -35,18 +35,31 @@ class User:
                 (self.id, self.username, self.first_name, self.last_name, self.timezone, self.language_code, self.is_active, self.referrer, self.score)
             )
 
-    def get_fines(self):
-        res = execute_database_command(
-            'SELECT h.label, c.datetime_native, h.fine FROM checks c JOIN habits h ON c.habit_id = h.id WHERE c.status = %s AND h.user_id = %s;',
-            (CheckStatus.FAIL.name, self.id)
-        )[0]
+    def get_fines(self, judge=None):  # TODO попробовать переписать красиво
+        if judge:
+            res = execute_database_command(
+                'SELECT h.label, c.datetime_native, h.fine FROM checks c JOIN habits h ON c.habit_id = h.id WHERE c.status = %s AND h.user_id = %s AND h.judge=%s;',
+                (CheckStatus.FAIL.name, self.id, judge)
+            )[0]
+        else:
+            res = execute_database_command(
+                'SELECT h.label, c.datetime_native, h.fine FROM checks c JOIN habits h ON c.habit_id = h.id WHERE c.status = %s AND h.user_id = %s AND h.judge IS NULL;',
+                (CheckStatus.FAIL.name, self.id)
+            )[0]
+
         return res
 
-    def satisfy_fines(self, satisfaction_type):
-        execute_database_command(
-            'UPDATE checks SET status = %s FROM habits WHERE habits.id = checks.habit_id AND habits.user_id = %s AND checks.status = %s;',
-            (satisfaction_type, self.id, CheckStatus.FAIL.name)
-        )
+    def satisfy_fines(self, satisfaction_type, judge=None):  # TODO попробовать переписать красиво
+        if judge:
+            execute_database_command(
+                'UPDATE checks SET status = %s FROM habits WHERE habits.id = checks.habit_id AND habits.user_id = %s AND checks.status = %s AND habits.judge = %s;',
+                (satisfaction_type, self.id, CheckStatus.FAIL.name, judge)
+            )
+        else:
+            execute_database_command(
+                'UPDATE checks SET status = %s FROM habits WHERE habits.id = checks.habit_id AND habits.user_id = %s AND checks.status = %s AND habits.judge IS NULL;',
+                (satisfaction_type, self.id, CheckStatus.FAIL.name)
+            )
 
     def __str__(self):
         return f'{self.username if self.username else "No name"} (id: {self.id})'

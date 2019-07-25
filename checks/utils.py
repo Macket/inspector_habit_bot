@@ -8,6 +8,7 @@ class CheckStatus(Enum):
     FAIL = 'FAIL'
     PAID = 'PAID'
     WORKED = 'WORKED'
+    JUSTIFIED = 'JUSTIFIED'
 
 
 status_icons = {
@@ -17,4 +18,5 @@ status_icons = {
     'FAIL': '️✖️',
     'PAID': '💰',
     'WORKED': '👥',
+    'JUSTIFIED': '👨‍⚖️',
 }

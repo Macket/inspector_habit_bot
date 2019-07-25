@@ -7,9 +7,11 @@ from checks.models import Check
 from habits.models import Habit
 from checks.utils import CheckStatus
 from checks import markups
-from fines.handlers import user_violations
+from fines.handlers import user_violations, user_violations_with_judge
 import ast
 import random
+from users.utils import get_user_naming
+
 
 ru_success_phrases = ['Красавчик👍', 'Хорооош👍', 'Еееее', 'Крутяк😊', 'Капитальный красавчик👍',
                       'А я уже было подумал, что ты лентяй😂', 'Лучший!!!', 'Так держать👍']
@@ -84,9 +86,24 @@ def handle_check_query(call):
 
         bot.send_message(call.message.chat.id, text, parse_mode='Markdown')
         bot.send_sticker(call.message.chat.id, random.choice(success_stickers))
+
+        if habit.judge:
+            judge = User.get(habit.judge)
+
+            ru_text_judge = f'{get_user_naming(user, "Твой друг")} выполнил обещание *{habit.label}*'
+            en_text_judge = f'{get_user_naming(user, "Your friend")} fulfilled the promise *{habit.label}*'
+            text_judge = ru_text_judge if judge.language_code == 'ru' else en_text_judge
+
+            try:
+                bot.send_message(judge.id, text_judge, parse_mode='Markdown')
+            except Exception:
+                pass
     else:
-        bot.send_sticker(call.message.chat.id, random.choice(fail_stickers))
-        user_violations(call.message)
+        if habit.judge:
+            user_violations_with_judge(user.id, habit.judge)
+        else:
+            bot.send_sticker(call.message.chat.id, random.choice(fail_stickers))
+            user_violations(call.message)
 
 
 def take_points_from_debtors():

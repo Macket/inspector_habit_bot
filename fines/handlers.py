@@ -3,6 +3,7 @@ from users import markups as user_markups
 from fines import markups
 from fines.payment import send_invoice
 from users.models import User
+from users.utils import get_user_naming
 
 
 @bot.message_handler(func=lambda message:
@@ -32,6 +33,52 @@ def user_violations(message):
         markup = markups.get_punishment_markup(message.chat.id)
 
     bot.send_message(message.chat.id, text=report, parse_mode='Markdown', reply_markup=markup)
+
+
+def user_violations_with_judge(user_id, judge_id):
+    user = User.get(user_id)
+    judge = User.get(judge_id)
+
+    violations = user.get_fines(judge_id)
+
+    ru_report_user = f'Ты обвиняешься в следующих нарушениях перед ' \
+                     f'{get_user_naming(judge, "своим другом")}:\n\n'
+    en_report_user = f'You are accused of the following violations in front of ' \
+                     f'{get_user_naming(judge, "your friend")}:\n\n'
+
+    ru_report_judge = f'{get_user_naming(user, "Твой друг")} обвиняется в следующих нарушениях перед тобой:\n\n'
+    en_report_judge = f'{get_user_naming(user, "Your friend")} accused of the following violations in front of you:\n\n'
+
+    report_user = ru_report_user if user.language_code == 'ru' else en_report_user
+    report_judge = ru_report_judge if judge.language_code == 'ru' else en_report_judge
+
+    sum = 0
+    for violation in violations:
+        label = violation[0]
+        datetime_native = violation[1]
+        fine = violation[2]
+
+        report_user += f'_{datetime_native}_ {label} *${fine}*\n\n'
+        report_judge += f'_{datetime_native}_ {label} *${fine}*\n\n'
+
+        sum += fine
+
+    report_user += f'Заплати {get_user_naming(judge, "другу")} *${sum}*' if user.language_code == 'ru' else \
+        f'Pay {get_user_naming(judge, "your friend")} *${sum}*'
+
+    report_judge += f'Когда {get_user_naming(user, "твой друг")} заплатит тебе *${sum}*, нажми кнопку👇' if user.language_code == 'ru' else \
+        f'When {get_user_naming(user, "your friend")} pays you *${sum}*, hit the button👇'
+
+    try:
+        bot.send_message(user_id, text=report_user, parse_mode='Markdown')
+    except Exception:
+        pass
+
+    try:
+        bot.send_message(judge_id, text=report_judge, parse_mode='Markdown',
+                         reply_markup=markups.get_judge_payment_report_markup(user_id, judge_id))
+    except Exception:
+        pass
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('@@PUNISHMENT'))

@@ -9,11 +9,20 @@ from users.utils import get_schedule
 from checks.models import Check
 from habits.models import Habit
 from users.data import preparing_habits
+from users.utils import get_user_naming
 
 
 @bot.message_handler(func=lambda message:
 message.text in ['🎯 Новая привычка', '🎯 New habit'], content_types=['text'])
 def new_habit(message):
+    preparing_habits[message.chat.id] = {'with_judge': False}
+    habit_request(message)
+
+
+@bot.message_handler(func=lambda message:
+message.text in ['👨‍⚖️ Новая привычка с судьёй', '👨‍⚖️ New habit with judge'], content_types=['text'])
+def new_habit(message):
+    preparing_habits[message.chat.id] = {'with_judge': True}
     habit_request(message)
 
 
@@ -36,7 +45,8 @@ def habit_response(message):
     en_text = f'So you want *{message.text}*'
     text = ru_text if user.language_code == 'ru' else en_text
 
-    preparing_habits[message.chat.id] = {'label': message.text, 'days_of_week': []}
+    preparing_habits[message.chat.id]['label'] = message.text
+    preparing_habits[message.chat.id]['days_of_week'] = []
 
     bot.send_message(message.chat.id,
                      text,
@@ -167,22 +177,58 @@ def promise_request(message):
 def promise_receive(message):
     user = User.get(message.chat.id)
 
-    ru_text = 'Ну что ж, посмотрим, какой ты крутой. Удачи!'
-    en_text = "Well, let's see how cool you are. Good luck!"
-    text = ru_text if user.language_code == 'ru' else en_text
-
-    schedule_native, schedule_utc = get_schedule(
-        preparing_habits[message.chat.id]['days_of_week'],
-        preparing_habits[message.chat.id]['time_array'],
-        User.get(message.chat.id).timezone,
-    )
     habit = Habit(message.chat.id,
                   preparing_habits[message.chat.id]['label'],
                   preparing_habits[message.chat.id]['days_of_week'],
                   preparing_habits[message.chat.id]['time_array'],
                   preparing_habits[message.chat.id]['fine']).save()
-    for check_native, check_utc in zip(schedule_native, schedule_utc):  # нужно оптимизировать
-        Check(habit.id, check_native, check_utc).save()
-    del preparing_habits[message.chat.id]
 
-    bot.send_message(message.chat.id, text, reply_markup=markups.get_main_menu_markup(message.chat.id))
+    if preparing_habits[message.chat.id]['with_judge']:
+        ru_text = 'Осталось назначить судью. Просто отправь другу сообщение👇'
+        en_text = 'It remains to appoint a judge. Just send a message to a friend👇'
+        text = ru_text if user.language_code == 'ru' else en_text
+
+        bot.send_message(message.chat.id, text, reply_markup=types.ReplyKeyboardRemove())
+
+        ru_days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+        en_days = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+        days = ru_days if user.language_code == 'ru' else en_days
+
+        check_days = re.sub(r'\s+', ' ', ' '.join(
+            [day if day_of_week in preparing_habits[message.chat.id]['days_of_week'] else '' for day_of_week, day in
+             enumerate(days)]))
+        check_time = ' '.join(preparing_habits[message.chat.id]['time_array'])
+
+        ru_text = f'{get_user_naming(user, "Твой друг")} хочет, ' \
+                  f'чтобы ты стал его судьёй на привычке *{habit.label}*.\n\n' \
+                  f'Дни недели: *{check_days}*\n' \
+                  f'Время проверки: *{check_time}*\n' \
+                  f'Длительность: *3 недели*\n\n' \
+                  f'За каждый провал твой друг обязуется заплатить тебе *${habit.fine}*'
+        en_text = f'{get_user_naming(user, "Твой друг")} wants you' \
+                  f'to be the jadge on the habit *{habit.label}*.\n\n' \
+                  f'Days of week: *{check_days}*\n' \
+                  f'Checks time: *{check_time}*\n' \
+                  f'Duration: *3 weeks*\n\n' \
+                  f'For each fail, your friend agrees to pay you *${habit.fine}*'
+        text = ru_text if user.language_code == 'ru' else en_text
+
+        bot.send_message(message.chat.id, text, reply_markup=markups.get_judge_markup(user.id, habit.id), parse_mode='Markdown')
+    else:
+        ru_text = 'Ну что ж, посмотрим, какой ты крутой. Удачи!'
+        en_text = "Well, let's see how cool you are. Good luck!"
+        text = ru_text if user.language_code == 'ru' else en_text
+
+        schedule_native, schedule_utc = get_schedule(
+            preparing_habits[message.chat.id]['days_of_week'],
+            preparing_habits[message.chat.id]['time_array'],
+            User.get(message.chat.id).timezone,
+        )
+
+        for check_native, check_utc in zip(schedule_native, schedule_utc):  # нужно оптимизировать
+            Check(habit.id, check_native, check_utc).save()
+
+        bot.send_message(message.chat.id, text, reply_markup=markups.get_main_menu_markup(message.chat.id))
+        bot.send_sticker(message.chat.id, 'CAADAgADWQIAAsY4fgsQX6OJTX_IOgI')
+
+    del preparing_habits[message.chat.id]

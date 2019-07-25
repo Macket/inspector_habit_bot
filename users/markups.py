@@ -1,6 +1,7 @@
 from telebot import types
 from users.data import preparing_habits
 from users.models import User
+import settings
 
 
 def get_main_menu_markup(user_id):
@@ -8,6 +9,7 @@ def get_main_menu_markup(user_id):
     ru_markup = types.ReplyKeyboardMarkup(row_width=1)
     ru_markup.add(
         types.KeyboardButton('🎯 Новая привычка'),
+        types.KeyboardButton('👨‍⚖️ Новая привычка с судьёй'),
         types.KeyboardButton('🗓 Мои привычки'),
         types.KeyboardButton('❗️ Мои нарушения'),
         types.KeyboardButton('✉️ Написать разработчикам'),
@@ -15,6 +17,7 @@ def get_main_menu_markup(user_id):
     en_markup = types.ReplyKeyboardMarkup(row_width=1)
     en_markup.add(
         types.KeyboardButton('🎯 New habit'),
+        types.KeyboardButton('👨‍⚖️ New habit with judge'),
         types.KeyboardButton('🗓 My habits'),
         types.KeyboardButton('❗ My violations'),
         types.KeyboardButton('✉️ Contact developers'),
@@ -133,3 +136,20 @@ def get_promise_markup(user_id):
     en_markup.add(types.KeyboardButton('I promise'))
     markup = ru_markup if user.language_code == 'ru' else en_markup
     return markup
+
+
+def get_judge_markup(user_id, habit_id):
+    user = User.get(user_id)
+    ru_button = 'Стать судьёй'
+    en_button = 'Become the judge'
+    button = ru_button if user.language_code == 'ru' else en_button
+
+    inline_markup = types.InlineKeyboardMarkup(row_width=1)
+
+    url = f'https://t.me/BotoKatalabot?start=judge_{habit_id}' if settings.DEBUG \
+        else f'https://t.me/inspector_habit_bot?start=judge_{habit_id}'
+    inline_markup.add(
+        types.InlineKeyboardButton(text=button, url=url),
+    )
+
+    return inline_markup

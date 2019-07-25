@@ -2,6 +2,11 @@ from bot import bot
 from utils.database import execute_database_command
 from checks.utils import status_icons
 from users.markups import get_main_menu_markup
+from users.models import User
+from habits.models import Habit
+from checks.models import Check
+from users.utils import get_schedule, get_user_naming
+from habits import markups
 
 
 @bot.message_handler(func=lambda message:
@@ -26,3 +31,60 @@ def user_habits(message):
         report += f'*{habit["label"]}*\n{" ".join(habit["checks"])}\n\n'
 
     bot.send_message(message.chat.id, text=report, parse_mode='Markdown', reply_markup=get_main_menu_markup(message.chat.id))
+
+
+@bot.message_handler(func=lambda message: message.text.startswith('/start judge'), commands=['start'])
+def register_judge(message):
+    habit_id = int(message.text.split('_')[1])
+    habit = Habit.get(habit_id)
+
+    if habit.user_id != message.chat.id:
+        judge = User.get(message.chat.id)
+
+        if judge:
+            reply_markup = get_main_menu_markup(judge.id)
+        else:
+            judge = User(message.chat.id,
+                         username=message.from_user.username,
+                         first_name=message.from_user.first_name,
+                         last_name=message.from_user.last_name,
+                         language_code=message.from_user.language_code,
+                         timezone='UTC',
+                         )
+            judge.save()
+            reply_markup = markups.get_judge_register_markup(judge.id)
+
+        habit.judge = judge.id
+        habit.save()
+
+        days_of_week = list(map(lambda x: int(x), habit.days_of_week[1:-1].split(',')))
+        time_array = list(map(lambda x: x.strip(), habit.time_array[1:-1].split(',')))
+
+        schedule_native, schedule_utc = get_schedule(
+            days_of_week,
+            time_array,
+            User.get(message.chat.id).timezone,
+        )
+
+        for check_native, check_utc in zip(schedule_native, schedule_utc):  # TODO оптимизировать
+            Check(habit.id, check_native, check_utc).save()
+
+        user = User.get(habit.user_id)
+        ru_text_judge = f'Теперь ты судья {get_user_naming(user, "своего друга")} ' \
+                        f'на привычке *{habit.label}*. Я буду сообщать тебе о его успехах (и провалах😈).'
+        en_text_judge = f'You just became the judge of {get_user_naming(user, "your friend")} ' \
+                        f'on the habit *{habit.label}*. I will inform you of his successes (and fails😈).'
+        text_judge = ru_text_judge if user.language_code == 'ru' else en_text_judge
+
+        ru_text_user = f'{get_user_naming(judge, "Твой друг")} стал судьёй на привычке *{habit.label}*'
+        en_text_user = f'{get_user_naming(user, "Your friend")} became the judge on the habit *{habit.label}*'
+        text_user = ru_text_user if user.language_code == 'ru' else en_text_user
+
+        try:
+            bot.send_message(message.chat.id, text_judge, reply_markup=reply_markup, parse_mode='Markdown')
+        except Exception:
+            pass
+        try:
+            bot.send_message(user.id, text_user, reply_markup=get_main_menu_markup(user.id), parse_mode='Markdown')
+        except Exception:
+            pass

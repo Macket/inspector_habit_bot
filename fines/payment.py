@@ -4,6 +4,7 @@ import settings
 from users.models import User
 from checks.utils import CheckStatus
 from currency_converter import CurrencyConverter
+from users.utils import get_user_naming
 
 
 provider_token = settings.PROVIDER_TOKEN
@@ -86,8 +87,34 @@ def got_payment(message):
     user = User.get(message.chat.id)
     user.satisfy_fines(CheckStatus.PAID.name)
 
-    ru_text = '! Все штрафы погашены, все обвинения сняты.'
-    en_text = 'You are an honest person! All fines repaid, all charges dropped.'
+    ru_text = 'Все штрафы погашены, все обвинения сняты.'
+    en_text = 'All fines repaid, all charges dropped.'
     text = ru_text if user.language_code == 'ru' else en_text
 
     bot.send_message(message.chat.id, text, parse_mode='Markdown')
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('@@JUDGE_PAYMENT_REPORT'))
+def got_judge_payment_report(call):
+    user_id = int(call.data.split('/')[1])
+
+    user = User.get(user_id)
+    judge = User.get(call.message.chat.id)
+    user.satisfy_fines(CheckStatus.JUSTIFIED.name, call.message.chat.id)
+
+    ru_text_judge = f'Все штрафы {get_user_naming(user, "твоего друга")} погашены.'
+    en_text_judge = f'All fines of {get_user_naming(user, "your friend")} are repaid'
+    text_judge = ru_text_judge if user.language_code == 'ru' else en_text_judge
+
+    ru_text_user = f'Все штрафы перед {get_user_naming(judge, "твоим другом")} погашены.'
+    en_text_user = f'All fines to {get_user_naming(user, "your friend")} are reapid.'
+    text_user = ru_text_user if user.language_code == 'ru' else en_text_user
+
+    try:
+        bot.send_message(call.message.chat.id, text_judge)
+    except Exception:
+        pass
+    try:
+        bot.send_message(user_id, text_user)
+    except Exception:
+        pass
