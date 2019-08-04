@@ -13,6 +13,6 @@ CREATE_HABITS_TABLE = """
        fine SMALLINT,
        judge BIGINT DEFAULT NULL,
        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-       FOREIGN KEY (judge) REFERENCES users (id) ON DELETE CASCADE  
+       FOREIGN KEY (judge) REFERENCES users (id) ON DELETE SET NULL  
        )
        """
