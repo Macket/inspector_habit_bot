@@ -12,6 +12,7 @@ def get_main_menu_markup(user_id):
         types.KeyboardButton('👨‍⚖️ Новая привычка с судьёй'),
         types.KeyboardButton('🗓 Мои привычки'),
         types.KeyboardButton('❗️ Мои нарушения'),
+        types.KeyboardButton('🤨 Куда пойдут мои деньги?'),
         types.KeyboardButton('✉️ Написать разработчикам'),
     )
     en_markup = types.ReplyKeyboardMarkup(row_width=1)
@@ -20,6 +21,7 @@ def get_main_menu_markup(user_id):
         types.KeyboardButton('👨‍⚖️ New habit with judge'),
         types.KeyboardButton('🗓 My habits'),
         types.KeyboardButton('❗ My violations'),
+        types.KeyboardButton('🤨 Where will my money go?'),
         types.KeyboardButton('✉️ Contact developers'),
     )
     markup = ru_markup if user.language_code == 'ru' else en_markup

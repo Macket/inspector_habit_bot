@@ -35,6 +35,24 @@ def user_violations(message):
     bot.send_message(message.chat.id, text=report, parse_mode='Markdown', reply_markup=markup)
 
 
+@bot.message_handler(func=lambda message:
+message.text in ['🤨 Куда пойдут мои деньги?', '🤨 Where will my money go?'], content_types=['text'])
+def user_violations(message):
+    user = User.get(message.chat.id)
+
+    ru_text = '80% пойдут детишкам на интернет: https://giveinternet.org/\n\n' \
+              'Остальное я потрачу на кофе с булочками😊'
+    en_text = '80% of money I will donate on Internet access to ' \
+              'underprivileged high-school students: https://giveinternet.org/\n\n' \
+              "I'll spend the rest on coffee with buns😊"
+    text = ru_text if user.language_code == 'ru' else en_text
+
+    bot.send_message(message.chat.id,
+                     text=text,
+                     parse_mode='Markdown',
+                     reply_markup=user_markups.get_main_menu_markup(message.chat.id))
+
+
 def user_violations_with_judge(user_id, judge_id):
     user = User.get(user_id)
     judge = User.get(judge_id)

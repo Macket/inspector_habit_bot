@@ -38,14 +38,16 @@ message.text in ['🗝 Зарегистрироваться', '🗝 Sign up'], c
 def greeting_and_habit_request(message):
     user = User.get(message.chat.id)
     ru_text = f'Привет{", " + user.first_name if user.first_name else ""}! ' \
-              f'Я Инспектор Хэбит, борец с мировой ленью и прокрастинацией. ' \
+              f'Я Инспектор Хэбит, борец с мировой ленью и филантроп. ' \
               f'А ты, кажется, как раз испытваешь с этим определённые проблемы.\n\n' \
               f'Короче, назначаешь себе привычку и обещаешь следовать ей, ' \
               f'а я тебя буду проверять: держишь слово — красавчик, ' \
               f'нарушаешь — ловишь денежный штраф. Размер штрафа выбираешь сам. ' \
               f'И таким образом мы работаем 3 недели.\n\n' \
               f'Всё ясно? Если да, то выбирай привычку из списка или пиши свою, ' \
-              f'если нет, то не трать моё время.'
+              f'если нет, то не трать моё время.\n\n' \
+              f'И кстати, я филантроп: 80% денег, ' \
+              f'сгенерированных на твоей лени, пойдут на благотворительность'
 
     en_text = f'Hello{", " + user.first_name if user.first_name else ""}! ' \
               f'I am Inspector Habit, fighter with world laziness and procrastination. ' \
@@ -55,7 +57,9 @@ def greeting_and_habit_request(message):
               f'you break - you catch a fine. The size of the fine you choose. ' \
               f'And so we work 3 weeks.\n\n' \
               f'All clear? If yes, then choose a habit from the list or write your own, ' \
-              f"if not, don't waste my time."
+              f"if not, don't waste my time.\n\n" \
+              f"And by the way, I'm a philanthropist: 80% of the money " \
+              f"generated on your laziness will go to charity"
 
     text = ru_text if user.language_code == 'ru' else en_text
 
