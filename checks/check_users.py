@@ -18,13 +18,33 @@ ru_success_phrases = ['Красавчик👍', 'Хорооош👍', 'Ееее�
 en_success_phrases = ['Cool👍', 'You are pretty good👍', 'Yeah!!!', 'Best!',
                       'And I already thought you were lazy😂', 'Keep it up👍']
 
-success_stickers = ['CAADAgADawIAAsY4fgsDhbjMBJlV4AI', 'CAADAgADugIAAsY4fgu4uDPJXXphTgI',
-                    'CAADAgADUgADYIltDBp238_XJHBwAg', 'CAADAgADFQkAAgi3GQLidaybScg8wwI',
-                    'CAADAgAD8wAEOKAKN5v1aQrj1EgC']
+success_stickers = ['CAADAgADawIAAsY4fgsDhbjMBJlV4AI',
+                    'CAADAgADugIAAsY4fgu4uDPJXXphTgI',
+                    'CAADAgADUgADYIltDBp238_XJHBwAg',
+                    'CAADAgADFQkAAgi3GQLidaybScg8wwI',
+                    'CAADAgAD8wAEOKAKN5v1aQrj1EgC',
+                    'CAADBQADbgMAAukKyAN8NA8_2uwEbRYE',
+                    'CAADBQADbwMAAukKyAOvzr7ZArpddBYE',
+                    'CAADBQADzwMAAukKyAPJ6kGu2BGu0hYE',
+                    'CAADAgADCgkAAgi3GQL7DdMy7QMLYhYE',
+                    'CAADAgADVgkAAgi3GQKZSn_np-jbNRYE']
 
-fail_stickers = ['CAADAgADzwEAAvnkbAABsjFAs3iK3fgC', 'CAADAgADYQAD6u8-Cu07kxWOZDfKAg',
-                 'CAADAgADkAIAAsY4fgsQVTK1QgZFoQI', 'CAADAgADZwkAAnlc4gmuNXdMkJqu5wI',
-                 'CAADAgADuwEAAvFCvwUHymbGsZgiLQI']
+fail_stickers = ['CAADAgADzwEAAvnkbAABsjFAs3iK3fgC',
+                 'CAADAgADYQAD6u8-Cu07kxWOZDfKAg',
+                 'CAADAgADkAIAAsY4fgsQVTK1QgZFoQI',
+                 'CAADAgADZwkAAnlc4gmuNXdMkJqu5wI',
+                 'CAADAgADuwEAAvFCvwUHymbGsZgiLQI',
+                 'CAADAgADDAkAAgi3GQKIOO6UHoJovxYE',
+                 'CAADAgADEwkAAgi3GQKQqZ1Of22QNBYE',
+                 'CAADAgADWwkAAgi3GQJorlW1m4id3xYE',
+                 'CAADAgADhgADE-ZSAcQNAW3NGZOSFgQ',
+                 'CAADAgADjAgAAnlc4gmFDSBf_qyCOxYE']
+
+remind_stickers = ['CAADAgAD2AIAAsY4fgtkktnDjo_g_hYE',
+                   'CAADAgADCwcAAnlc4gnFFPkWJcR13hYE',
+                   'CAADAQADMAcAAr-MkATOOPvgQ3A3LhYE',
+                   'CAADAgADTgQAAmvEygo8YG7sYoE4WhYE',
+                   'CAADAgADiAgAAnlc4gkZZtd2m1gdLRYE']
 
 
 def check_users(last_check_utc):
@@ -135,7 +155,7 @@ def handle_kick_lazy_ass_query(call):
     text = ru_text if user.language_code == 'ru' else en_text
     try:
         bot.send_message(user.id, text, parse_mode='Markdown')
-        bot.send_sticker(user.id, random.choice(fail_stickers))
+        bot.send_sticker(user.id, random.choice(remind_stickers))
     except Exception:
         pass
 
@@ -214,14 +234,28 @@ Jason_Statham_quotes_ru = ['В любом процессе важна не ск�
                            'Молчание - лучший способ ответа на бессмысленные вопросы.',
                            'Тем, кого вдохновляют мои герои, не помешало бы лишний раз подумать.',
                            'Живи в свое удовольствие, но не забывай про тех кто рядом.',
-                           'Будь самим собой, имей свою точку зрения, умей постоять за себя и за своих близких и тебя будут уважать.']
+                           'Будь самим собой, имей свою точку зрения, умей постоять за себя и за своих близких и тебя будут уважать.',
+                           'У тебя есть враги? Хорошо. Значит, в своей жизни ты что-то когда-то отстаивал.',
+                           'Если вы идете сквозь ад — идите, не останавливаясь.',
+                           'Умный человек не делает сам все ошибки — он дает шанс и другим.',
+                           'Любой кризис — это новые возможности.',
+                           'Успех — это способность шагать от одной неудачи к другой, не теряя энтузиазма.',
+                           'Сокол высоко поднимается, когда летит против ветра, а не по ветру.',
+                           'Глуп тот человек, который никогда не меняет своего мнения.',
+                           'Когда орлы молчат, болтают попугаи.']
 
 Jason_Statham_quotes_en = ["I've come from nowhere, and I'm not shy to go back.",
                            "You only get one shot in your life, and you might as well push yourself and try things.",
                            "Revenge is a caustic thing. I say, breathe in, breathe deeply, let it go.",
                            "How long you can continue to be good at something is how much you believe in yourself and how much hard work you do with the training.",
                            "If you're going to do something, do it with style!",
-                           "Looking good and feeling good go hand in hand. If you have a healthy lifestyle, your diet and nutrition are set, and you're working out, you're going to feel good."]
+                           "Looking good and feeling good go hand in hand. If you have a healthy lifestyle, your diet and nutrition are set, and you're working out, you're going to feel good.",
+                           "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                           "You have enemies? Good. That means you've stood up for something, sometime in your life.",
+                           "Men occasionally stumble over the truth, but most of them pick themselves up and hurry off as if nothing ever happened",
+                           "If you are going through hell, keep going.",
+                           "My tastes are simple: I am easily satisfied with the best",
+                           "History will be kind to me for I intend to write it."]
 
 
 def motivate_users_with_Jason_Statham():
