@@ -29,28 +29,43 @@ fail_stickers = ['CAADAgADzwEAAvnkbAABsjFAs3iK3fgC', 'CAADAgADYQAD6u8-Cu07kxWOZD
 
 def check_users(last_check_utc):
     now_utc = datetime.strptime(datetime.utcnow().strftime("%Y-%m-%d %H:%M"), "%Y-%m-%d %H:%M")  # Нужно исправить
-    checks = execute_database_command('''SELECT c.id, c.habit_id, c.datetime_native, c.datetime_utc, h.label, h.user_id FROM
+    checks = execute_database_command('''SELECT c.id, c.habit_id, c.datetime_native, c.datetime_utc, h.label, h.user_id, h.judge FROM
     checks c JOIN habits h ON c.habit_id = h.id JOIN users u ON u.id = h.user_id 
     WHERE c.datetime_utc <= %s AND c.datetime_utc > %s AND c.status=%s;
     ''', (now_utc, last_check_utc, CheckStatus.PENDING.name))[0]
     for check in checks:
-        check_id, habit_id, datetime_native, datetime_utc, label, user_id = check
+        check_id, habit_id, datetime_native, datetime_utc, label, user_id, judge_id = check
         c = Check(habit_id, datetime_native, datetime_utc, CheckStatus.CHECKING.name, check_id)
         c.save()
 
         user = User.get(user_id)
-        ru_text = f'Ты обещал "{label}". Ты держишь своё слово?\n\n' \
+        ru_text = f'Ты обещал "*{label}*". Ты держишь своё слово?\n\n' \
                   f'Учти, что за ответ "❌ Нет" нужно будет заплатить штраф'
-        en_text = f'You promised "{label}". Are you keeping your promise?\n\n' \
+        en_text = f'You promised "*{label}*". Are you keeping your promise?\n\n' \
                   f'Note that you will have to pay a fine for the answer "❌ No"'
         text = ru_text if user.language_code == 'ru' else en_text
 
         try:
             bot.send_message(user_id,
                              text,
-                             reply_markup=markups.get_check_inline_markup(user_id, check_id))
+                             reply_markup=markups.get_check_inline_markup(user_id, check_id),
+                             parse_mode='Markdown')
         except Exception:
             pass
+
+        if judge_id:
+            judge = User.get(judge_id)
+            ru_text_judge = f'{get_user_naming(user, "Твой друг")} обещал "*{label}*"'
+            en_text_judge = f'{get_user_naming(user, "Your friend")} promised "*{label}*"'
+            text_judge = ru_text_judge if judge.language_code == 'ru' else en_text_judge
+
+            try:
+                bot.send_message(judge_id,
+                                 text_judge,
+                                 reply_markup=markups.get_kick_lazy_ass_markup(judge_id, habit_id),
+                                 parse_mode='Markdown')
+            except Exception as e:
+                print(e)
     return now_utc
 
 
@@ -73,7 +88,7 @@ def handle_check_query(call):
     bot.edit_message_text(chat_id=call.message.chat.id,
                           text=call.message.text,
                           message_id=call.message.message_id,
-                          reply_markup= markups.get_check_result_inline_markup(called_button_label),
+                          reply_markup=markups.get_check_result_inline_markup(called_button_label),
                           parse_mode='HTML')
 
     if data['status'] == CheckStatus.SUCCESS.name:
@@ -104,6 +119,27 @@ def handle_check_query(call):
         else:
             bot.send_sticker(call.message.chat.id, random.choice(fail_stickers))
             user_violations(call.message)
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('@@KICK_LAZY_ASS'))
+def handle_kick_lazy_ass_query(call):
+    habit_id = int(call.data.split('/')[1])
+    habit = Habit.get(habit_id)
+    user = User.get(habit.user_id)
+
+    judge = User.get(call.message.chat.id)
+    ru_text = f'{get_user_naming(judge, "Твой друг")} ' \
+              f'напоминает тебе, что ты обещал "*{habit.label}*"'
+    en_text = f'{get_user_naming(judge, "Your friend")} ' \
+              f'reminds you that you promised "*{habit.label}*"'
+    text = ru_text if user.language_code == 'ru' else en_text
+    try:
+        bot.send_message(user.id, text, parse_mode='Markdown')
+        bot.send_sticker(user.id, random.choice(fail_stickers))
+    except Exception:
+        pass
+
+    bot.send_message(judge.id, 'Сделано!')
 
 
 def take_points_from_debtors():

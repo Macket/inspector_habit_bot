@@ -28,3 +28,15 @@ def get_check_result_inline_markup(text):
     inline_markup.add(types.InlineKeyboardButton(text=text, callback_data='None'))
 
     return inline_markup
+
+
+def get_kick_lazy_ass_markup(judge_id, habit_id):
+    judge = User.get(judge_id)
+    text = 'Напомнить' if judge.language_code == 'ru' else 'Remind'
+    inline_markup = types.InlineKeyboardMarkup(row_width=1)
+    inline_markup.add(
+        types.InlineKeyboardButton(
+            text=text,
+            callback_data='@@KICK_LAZY_ASS/' + str(habit_id)))
+
+    return inline_markup
