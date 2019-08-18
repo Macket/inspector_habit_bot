@@ -47,10 +47,13 @@ def user_violations(message):
               "I'll spend the rest on coffee with buns😊"
     text = ru_text if user.language_code == 'ru' else en_text
 
-    bot.send_message(message.chat.id,
-                     text=text,
-                     parse_mode='Markdown',
-                     reply_markup=user_markups.get_main_menu_markup(message.chat.id))
+    try:
+        bot.send_message(message.chat.id,
+                         text=text,
+                         parse_mode='Markdown',
+                         reply_markup=user_markups.get_main_menu_markup(message.chat.id))
+    except:
+        pass
 
 
 def user_violations_with_judge(user_id, judge_id):

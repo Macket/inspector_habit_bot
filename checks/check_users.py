@@ -105,11 +105,14 @@ def handle_check_query(call):
         data['status'] == CheckStatus.SUCCESS.name else \
         call.message.json['reply_markup']['inline_keyboard'][0][1]['text']
 
-    bot.edit_message_text(chat_id=call.message.chat.id,
-                          text=call.message.text,
-                          message_id=call.message.message_id,
-                          reply_markup=markups.get_check_result_inline_markup(called_button_label),
-                          parse_mode='HTML')
+    try:
+        bot.edit_message_text(chat_id=call.message.chat.id,
+                              text=call.message.text,
+                              message_id=call.message.message_id,
+                              reply_markup=markups.get_check_result_inline_markup(called_button_label),
+                              parse_mode='HTML')
+    except:
+        pass
 
     if data['status'] == CheckStatus.SUCCESS.name:
         user.score += habit.fine
@@ -119,8 +122,11 @@ def handle_check_query(call):
         en_text = f'{random.choice(en_success_phrases)}\n\n*+{habit.fine} points*'
         text = ru_text if user.language_code == 'ru' else en_text
 
-        bot.send_message(call.message.chat.id, text, parse_mode='Markdown')
-        bot.send_sticker(call.message.chat.id, random.choice(success_stickers))
+        try:
+            bot.send_message(call.message.chat.id, text, parse_mode='Markdown')
+            bot.send_sticker(call.message.chat.id, random.choice(success_stickers))
+        except:
+            pass
 
         if habit.judge:
             judge = User.get(habit.judge)
@@ -137,7 +143,10 @@ def handle_check_query(call):
         if habit.judge:
             user_violations_with_judge(user.id, habit.judge)
         else:
-            bot.send_sticker(call.message.chat.id, random.choice(fail_stickers))
+            try:
+                bot.send_sticker(call.message.chat.id, random.choice(fail_stickers))
+            except:
+                pass
             user_violations(call.message)
 
 
@@ -159,7 +168,10 @@ def handle_kick_lazy_ass_query(call):
     except Exception:
         pass
 
-    bot.send_message(judge.id, 'Сделано!')
+    try:
+        bot.send_message(judge.id, 'Сделано!')
+    except:
+        pass
 
 
 def take_points_from_debtors():
