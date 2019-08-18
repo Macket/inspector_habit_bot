@@ -156,7 +156,7 @@ def fine_receive(message):
         promise_request(message)
     except (ValueError, IndexError):
         user = User.get(message.chat.id)
-        ru_text = 'Вы отправили что-то не то'
+        ru_text = 'Ты отправил что-то не то'
         en_text = 'You sent something wrong'
         text = ru_text if user.language_code == 'ru' else en_text
 
@@ -189,8 +189,8 @@ def promise_receive(message):
                   preparing_habits[message.chat.id]['fine']).save()
 
     if preparing_habits[message.chat.id]['with_judge']:
-        ru_text = 'Осталось назначить судью. Просто отправь другу сообщение👇'
-        en_text = 'It remains to appoint a judge. Just send a message to a friend👇'
+        ru_text = 'Осталось назначить судью. Просто отправь другу сообщение ниже👇'
+        en_text = 'It remains to assign the judge. Just send the message below to a friend👇'
         text = ru_text if user.language_code == 'ru' else en_text
 
         bot.send_message(message.chat.id, text, reply_markup=types.ReplyKeyboardRemove())
@@ -209,13 +209,13 @@ def promise_receive(message):
                   f'Дни недели: *{check_days}*\n' \
                   f'Время проверки: *{check_time}*\n' \
                   f'Длительность: *3 недели*\n\n' \
-                  f'За каждый провал твой друг обязуется заплатить тебе *${habit.fine}*'
-        en_text = f'{get_user_naming(user, "Твой друг")} wants you' \
+                  f'За каждый провал {get_user_naming(user, "твой друг")} обязуется заплатить тебе *${habit.fine}*'
+        en_text = f'{get_user_naming(user, "Your friend")} wants you' \
                   f'to be the jadge on the habit *{habit.label}*.\n\n' \
                   f'Days of week: *{check_days}*\n' \
                   f'Checks time: *{check_time}*\n' \
                   f'Duration: *3 weeks*\n\n' \
-                  f'For each fail, your friend agrees to pay you *${habit.fine}*'
+                  f'For each fail {get_user_naming(user, "your friend")} agrees to pay you *${habit.fine}*'
         text = ru_text if user.language_code == 'ru' else en_text
 
         bot.send_message(message.chat.id, text, reply_markup=markups.get_judge_markup(user.id, habit.id), parse_mode='Markdown')
