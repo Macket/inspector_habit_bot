@@ -4,8 +4,9 @@ from users.models import User
 from datetime import datetime
 from tzwhere import tzwhere
 import re
+import pytz
 import users.markups as markups
-from users.utils import get_schedule
+from users.utils import get_schedule, get_user_naming
 from checks.models import Check
 from habits.models import Habit
 from users.data import preparing_habits
@@ -38,7 +39,7 @@ message.text in ['🗝 Зарегистрироваться', '🗝 Sign up'], c
 def greeting_and_habit_request(message):
     user = User.get(message.chat.id)
     ru_text = f'Привет{", " + user.first_name if user.first_name else ""}! ' \
-              f'Я Инспектор Хэбит, борец с мировой ленью и филантроп. ' \
+              f'Я Инспектор Хэбит, борец с мировой ленью и прокрастинацией. ' \
               f'А ты, кажется, как раз испытваешь с этим определённые проблемы.\n\n' \
               f'Короче, назначаешь себе привычку и обещаешь следовать ей, ' \
               f'а я тебя буду проверять: держишь слово — красавчик, ' \
@@ -204,8 +205,31 @@ def location_receive(message):
         user.timezone = timezone_str
         user.save()
         fine_request(message)
+    elif message.text == 'Указать вручную':
+        bot.send_message(message.chat.id, 'Выбери свой часовой пояс', reply_markup=markups.get_timezone_markup())
+        bot.register_next_step_handler(message, timezone_receive)
+    elif message.text == 'Specify manually':
+        bot.send_message(message.chat.id, 'Choose your timezone', reply_markup=markups.get_timezone_markup())
     else:
         bot.register_next_step_handler(message, location_receive)
+
+
+def timezone_receive(message):
+    user = User.get(message.chat.id)
+
+    tz = 'Etc/' + message.text
+    tz = tz.replace('-', '+') if '-' in tz else tz.replace('+', '-')
+    if tz in pytz.all_timezones:
+        user.timezone = tz
+        user.save()
+        fine_request(message)
+    else:
+        ru_text = 'Ты отправил что-то не то'
+        en_text = 'You sent something wrong'
+        text = ru_text if user.language_code == 'ru' else en_text
+
+        bot.send_message(message.chat.id, text)
+        bot.register_next_step_handler(message, timezone_receive)
 
 
 def fine_request(message):
@@ -224,15 +248,50 @@ def fine_request(message):
 def fine_receive(message):
     try:
         preparing_habits[message.chat.id]['fine'] = int(message.text.split('💲')[1])
-        promise_request(message)
+        money_intention_request(message)
     except (ValueError, IndexError):
         user = User.get(message.chat.id)
-        ru_text = 'Вы отправили что-то не то'
+        ru_text = 'Ты отправил что-то не то'
         en_text = 'You sent something wrong'
         text = ru_text if user.language_code == 'ru' else en_text
 
         bot.send_message(message.chat.id, text)
         bot.register_next_step_handler(message, fine_receive)
+
+
+def money_intention_request(message):
+    user = User.get(message.chat.id)
+
+    ru_text = 'Выбери, куда пойдут твои деньги: *другу* или *на благотворительность*.\n\n' \
+              'Если выберешь *другу*, то тебе нужно будет назначить своего друга ' \
+              'в качестве судьи на этой привычке. ' \
+              'Он будет следить за её выполнением и пинать тебя с моей помощью. ' \
+              'Ему же ты должен будешь заплатить штраф в случае провала.\n\n' \
+              'Если выберещь *благотворительность*, то штрафы будешь платить мне. ' \
+              'А я 80% денег пожертвую детишкам на интернет: https://giveinternet.org'
+    en_text = "Choose where your money will go: *to a friend* or *to charity*.\n\n" \
+              "If you choose *friend* you will need to assign your friend " \
+              "as the judge on this habit. " \
+              "He will monitor execution and kick you with my help. " \
+              "And you will have to pay a fine to him in case of failure. \n\n" \
+              "If you choose *charity*, then you will pay fines to me. " \
+              "And I will donate 80% of the money to the kids on the Internet: https://giveinternet.org"
+    text = ru_text if user.language_code == 'ru' else en_text
+
+    bot.send_message(message.chat.id,
+                     text,
+                     reply_markup=markups.get_money_intention_markup(message.chat.id),
+                     parse_mode='Markdown')
+    bot.register_next_step_handler(message, money_intention_receive)
+
+
+def money_intention_receive(message):
+    if message.text in ['Другу', 'To a friend']:
+        preparing_habits[message.chat.id]['with_judge'] = True
+    else:
+        preparing_habits[message.chat.id]['with_judge'] = False
+
+    promise_request(message)
 
 
 def promise_request(message):
@@ -253,35 +312,23 @@ def promise_request(message):
 def promise_receive(message):
     user = User.get(message.chat.id)
 
-    schedule_native, schedule_utc = get_schedule(
-        preparing_habits[message.chat.id]['days_of_week'],
-        preparing_habits[message.chat.id]['time_array'],
-        User.get(message.chat.id).timezone,
-    )
+    # Назначаем привычку
     habit = Habit(message.chat.id,
                   preparing_habits[message.chat.id]['label'],
                   preparing_habits[message.chat.id]['days_of_week'],
                   preparing_habits[message.chat.id]['time_array'],
                   preparing_habits[message.chat.id]['fine']).save()
-    for check_native, check_utc in zip(schedule_native, schedule_utc):  # нужно оптимизировать
-        Check(habit.id, check_native, check_utc).save()
-    del preparing_habits[message.chat.id]
 
+    # Снимаем штрафы с пригласившего
     if user.referrer:
         referrer = User.get(user.referrer)
         referrer.satisfy_fines(CheckStatus.WORKED.name)
 
-        referral_name = ''
-        if user.first_name:
-            referral_name = user.first_name
-            if user.last_name:
-                referral_name = user.first_name + ' ' + user.last_name
-
-        ru_text_ref = f'{referral_name if referral_name else "Твой друг"} ' \
+        ru_text_ref = f'{get_user_naming(user, "Твой друг")} ' \
                       f'назначил свою первую привычку. ' \
                       f'За успешно проведённые социальные работы ' \
                       f'с тебя снимаются все обвинения и твои штрафы аннулируются.'
-        en_text_ref = f'{referral_name if referral_name else "Your friend"} ' \
+        en_text_ref = f'{get_user_naming(user, "Your friend")} ' \
                       f'has assigned his first habit. ' \
                       f'For successful social work all charges ' \
                       f'against you and your fines are canceled.'
@@ -289,10 +336,54 @@ def promise_receive(message):
 
         bot.send_message(referrer.id, text_ref)
 
-    ru_text = 'Ну что ж, посмотрим, какой ты крутой. Удачи!'
-    en_text = "Well, let's see how cool you are. Good luck!"
-    text = ru_text if user.language_code == 'ru' else en_text
+    if preparing_habits[message.chat.id]['with_judge']:
+        ru_text = 'Осталось назначить судью. Просто отправь другу сообщение ниже👇'
+        en_text = 'It remains to assign the judge. Just send the message below to a friend👇'
+        text = ru_text if user.language_code == 'ru' else en_text
 
-    bot.send_message(message.chat.id, text, reply_markup=markups.get_main_menu_markup(message.chat.id))
-    bot.send_sticker(message.chat.id, 'CAADAgADWQIAAsY4fgsQX6OJTX_IOgI')
+        bot.send_message(message.chat.id, text, reply_markup=types.ReplyKeyboardRemove())
 
+        ru_days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+        en_days = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+        days = ru_days if user.language_code == 'ru' else en_days
+
+        check_days = re.sub(r'\s+', ' ', ' '.join(
+            [day if day_of_week in preparing_habits[message.chat.id]['days_of_week'] else '' for day_of_week, day in
+             enumerate(days)]))
+        check_time = ' '.join(preparing_habits[message.chat.id]['time_array'])
+
+        ru_text = f'{get_user_naming(user, "Твой друг")} хочет, ' \
+                  f'чтобы ты стал его судьёй на привычке *{habit.label}*.\n\n' \
+                  f'Дни недели: *{check_days}*\n' \
+                  f'Время проверки: *{check_time}*\n' \
+                  f'Длительность: *3 недели*\n\n' \
+                  f'За каждый провал {get_user_naming(user, "твой друг")} обязуется заплатить тебе *${habit.fine}*'
+        en_text = f'{get_user_naming(user, "Your friend")} wants you' \
+                  f'to be the jadge on the habit *{habit.label}*.\n\n' \
+                  f'Days of week: *{check_days}*\n' \
+                  f'Checks time: *{check_time}*\n' \
+                  f'Duration: *3 weeks*\n\n' \
+                  f'For each fail {get_user_naming(user, "your friend")} agrees to pay you *${habit.fine}*'
+        text = ru_text if user.language_code == 'ru' else en_text
+
+        bot.send_message(message.chat.id,
+                         text,
+                         reply_markup=markups.get_judge_markup(user.id, habit.id),
+                         parse_mode='Markdown')
+    else:
+        schedule_native, schedule_utc = get_schedule(
+            preparing_habits[message.chat.id]['days_of_week'],
+            preparing_habits[message.chat.id]['time_array'],
+            User.get(message.chat.id).timezone,
+        )
+
+        for check_native, check_utc in zip(schedule_native, schedule_utc):  # нужно оптимизировать
+            Check(habit.id, check_native, check_utc).save()
+        del preparing_habits[message.chat.id]
+
+        ru_text = 'Ну что ж, посмотрим, какой ты крутой. Удачи!'
+        en_text = "Well, let's see how cool you are. Good luck!"
+        text = ru_text if user.language_code == 'ru' else en_text
+
+        bot.send_message(message.chat.id, text, reply_markup=markups.get_main_menu_markup(message.chat.id))
+        bot.send_sticker(message.chat.id, 'CAADAgADWQIAAsY4fgsQX6OJTX_IOgI')

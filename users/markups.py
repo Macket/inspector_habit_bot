@@ -108,11 +108,40 @@ def get_ready_markup(user_id):
 def get_location_markup(user_id):
     user = User.get(user_id)
 
-    ru_markup = types.ReplyKeyboardMarkup()
-    ru_markup.add(types.KeyboardButton('Поделиться местоположением', request_location=True))
+    ru_markup = types.ReplyKeyboardMarkup(row_width=1)
+
+    ru_markup.add(
+        types.KeyboardButton('Поделиться местоположением', request_location=True),
+        types.KeyboardButton('Указать вручную'),
+    )
     en_markup = types.ReplyKeyboardMarkup()
-    en_markup.add(types.KeyboardButton('Share location', request_location=True))
+    en_markup.add(
+        types.KeyboardButton('Share location', request_location=True),
+        types.KeyboardButton('Specify manually'),
+    )
     markup = ru_markup if user.language_code == 'ru' else en_markup
+
+    return markup
+
+
+def get_timezone_markup():
+    markup = types.ReplyKeyboardMarkup()
+    markup.row('GMT')
+    markup.row('GMT-0', 'GMT+0')
+    markup.row('GMT-1', 'GMT+1')
+    markup.row('GMT-2', 'GMT+2')
+    markup.row('GMT-3', 'GMT+3')
+    markup.row('GMT-4', 'GMT+4')
+    markup.row('GMT-5', 'GMT+5')
+    markup.row('GMT-6', 'GMT+6')
+    markup.row('GMT-7', 'GMT+7')
+    markup.row('GMT-8', 'GMT+8')
+    markup.row('GMT-9', 'GMT+9')
+    markup.row('GMT-10', 'GMT+10')
+    markup.row('GMT-11', 'GMT+11')
+    markup.row('GMT-12', 'GMT+12')
+    markup.row('GMT+13')
+    markup.row('GMT+14')
 
     return markup
 
@@ -136,6 +165,23 @@ def get_promise_markup(user_id):
     ru_markup.add(types.KeyboardButton('Обещаю'))
     en_markup = types.ReplyKeyboardMarkup()
     en_markup.add(types.KeyboardButton('I promise'))
+    markup = ru_markup if user.language_code == 'ru' else en_markup
+    return markup
+
+
+def get_money_intention_markup(user_id):
+    user = User.get(user_id)
+
+    ru_markup = types.ReplyKeyboardMarkup(row_width=1)
+    ru_markup.add(
+        types.KeyboardButton('Другу'),
+        types.KeyboardButton('На благотворительность'),
+    )
+    en_markup = types.ReplyKeyboardMarkup(row_width=1)
+    en_markup.add(
+        types.KeyboardButton('To a friend'),
+        types.KeyboardButton('To charity'),
+    )
     markup = ru_markup if user.language_code == 'ru' else en_markup
     return markup
 
