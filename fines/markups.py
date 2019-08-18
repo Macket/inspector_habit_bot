@@ -38,12 +38,14 @@ def get_social_work_markup(user_id):
 
 def get_judge_payment_report_markup(user_id, judge_id):
     judge = User.get(judge_id)
-    button_label = '💰 Штрафы оплачены' if judge.language_code == 'ru' else '💰 Fines paid'
+    button1_label = '💰 Штрафы оплачены' if judge.language_code == 'ru' else '💰 Fines paid'
+    button2_label = '😡 Напомнить о долге' if judge.language_code == 'ru' else '😡 Remind about debt'
 
     inline_markup = types.InlineKeyboardMarkup(row_width=1)
 
     inline_markup.add(
-        types.InlineKeyboardButton(text=button_label, callback_data=f'@@JUDGE_PAYMENT_REPORT/{user_id}')
+        types.InlineKeyboardButton(text=button1_label, callback_data=f'@@JUDGE_PAYMENT_REPORT/{user_id}'),
+        types.InlineKeyboardButton(text=button2_label, callback_data=f'@@JUDGE_DEBT_REMIND/{user_id}'),
     )
 
     return inline_markup

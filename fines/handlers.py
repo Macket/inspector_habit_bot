@@ -147,3 +147,39 @@ def handle_punishment_query(call):
                          text_invite,
                          reply_markup=markups.get_social_work_markup(user.id),
                          parse_mode='Markdown')
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('@@JUDGE_DEBT_REMIND'))
+def judge_debt_remind(call):
+    user_id = int(call.data.split('/')[1])
+
+    user = User.get(user_id)
+    judge = User.get(call.message.chat.id)
+
+    ru_text_judge = f'Напоминание доставлено'
+    en_text_judge = f'Reminder delivered'
+    text_judge = ru_text_judge if judge.language_code == 'ru' else en_text_judge
+    print(text_judge)
+
+    ru_text_user = f'Тут {get_user_naming(judge, "твой друг")} попросил передать кое-что.'
+    en_text_user = f'Here {get_user_naming(judge, "your friend")} asked me to convey something.'
+    text_user = ru_text_user if user.language_code == 'ru' else en_text_user
+    print(text_user)
+
+    ru_where_money_Lebowsky_sticker = 'CAADAgADnQEAAvnkbAABG-jcw1OqPrAWBA'
+    en_where_money_Lebowsky_sticker = 'CAADAgADngEAAvnkbAABHcANeRBqS0QWBA'
+    where_money_Lebowsky_sticker = ru_where_money_Lebowsky_sticker if \
+        user.language_code == 'ru' else en_where_money_Lebowsky_sticker
+
+
+    print(where_money_Lebowsky_sticker)
+
+    try:
+        bot.send_message(call.message.chat.id, text_judge)
+    except Exception:
+        pass
+    try:
+        bot.send_message(user_id, text_user)
+        bot.send_sticker(user_id, where_money_Lebowsky_sticker)
+    except Exception:
+        pass

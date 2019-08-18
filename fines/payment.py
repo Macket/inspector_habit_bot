@@ -104,7 +104,7 @@ def got_judge_payment_report(call):
 
     ru_text_judge = f'Все штрафы {get_user_naming(user, "твоего друга")} погашены.'
     en_text_judge = f'All fines of {get_user_naming(user, "your friend")} are repaid'
-    text_judge = ru_text_judge if user.language_code == 'ru' else en_text_judge
+    text_judge = ru_text_judge if judge.language_code == 'ru' else en_text_judge
 
     ru_text_user = f'Все штрафы перед {get_user_naming(judge, "твоим другом")} погашены.'
     en_text_user = f'All fines to {get_user_naming(user, "your friend")} are reapid.'
