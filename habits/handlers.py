@@ -39,6 +39,7 @@ def register_judge(message):
     habit = Habit.get(habit_id)
 
     if habit.user_id != message.chat.id:
+        user = User.get(habit.user_id)
         judge = User.get(message.chat.id)
 
         if judge:
@@ -63,13 +64,12 @@ def register_judge(message):
         schedule_native, schedule_utc = get_schedule(
             days_of_week,
             time_array,
-            User.get(message.chat.id).timezone,
+            user.timezone,
         )
 
         for check_native, check_utc in zip(schedule_native, schedule_utc):  # TODO оптимизировать
             Check(habit.id, check_native, check_utc).save()
 
-        user = User.get(habit.user_id)
         ru_text_judge = f'Теперь ты судья {get_user_naming(user, "своего друга")} ' \
                         f'на привычке *{habit.label}*. Я буду сообщать тебе о его успехах (и провалах😈).'
         en_text_judge = f'You just became the judge of {get_user_naming(user, "your friend")} ' \
