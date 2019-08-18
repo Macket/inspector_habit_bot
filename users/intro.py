@@ -48,37 +48,51 @@ def greeting_and_habit_request(message):
               f'Всё ясно? Если да, то выбирай привычку из списка или пиши свою, ' \
               f'если нет, то не трать моё время.\n\n' \
               f'И кстати, я филантроп: 80% денег, ' \
-              f'сгенерированных на твоей лени, пойдут на благотворительность'
+              f'сгенерированных на твоей лени, пойдут на благотворительность.'
 
     en_text = f'Hello{", " + user.first_name if user.first_name else ""}! ' \
-              f'I am Inspector Habit, fighter with world laziness and procrastination. ' \
-              f'And you seem to be experiencing certain problems with it.\n\n' \
+              f'I am Inspector Habit, the fighter with world laziness and procrastination. ' \
+              f'And you seem to have trouble with it.\n\n' \
               f'In short, you assign yourself a habit and promise to follow it, ' \
               f'and I will check you: keep your word - handsome, ' \
-              f'you break - you catch a fine. The size of the fine you choose. ' \
+              f'you break - you catch a fine. You choose the amount of fines yourself. ' \
               f'And so we work 3 weeks.\n\n' \
               f'All clear? If yes, then choose a habit from the list or write your own, ' \
               f"if not, don't waste my time.\n\n" \
               f"And by the way, I'm a philanthropist: 80% of the money " \
-              f"generated on your laziness will go to charity"
+              f"generated on your laziness will go to charity."
 
     text = ru_text if user.language_code == 'ru' else en_text
 
     bot.send_message(message.chat.id, text, reply_markup=markups.get_habits_markup(message.chat.id))
-    bot.register_next_step_handler(message, habit_response)
+    bot.register_next_step_handler(message, habit_receive)
 
 
-def habit_response(message):
+def habit_receive(message):
     user = User.get(message.chat.id)
 
-    ru_text = f'Итак, ты  хочешь *{message.text}*'
-    en_text = f'So you want *{message.text}*'
-    text = ru_text if user.language_code == 'ru' else en_text
+    if message.text in ['Другое...', 'Other...']:
+        ru_text = 'Напиши привычку, над которой будем работать'
+        en_text = 'Write the habit we will work on'
+        text = ru_text if user.language_code == 'ru' else en_text
 
-    preparing_habits[message.chat.id] = {'label': message.text, 'days_of_week': []}
+        bot.send_message(message.chat.id,
+                         text,
+                         reply_markup=types.ReplyKeyboardRemove(),
+                         parse_mode='Markdown')
+        bot.register_next_step_handler(message, habit_receive)
+    else:
+        ru_text = f'Итак, ты  хочешь *{message.text}*'
+        en_text = f'So you want *{message.text}*'
+        text = ru_text if user.language_code == 'ru' else en_text
 
-    bot.send_message(message.chat.id, text, reply_markup=markups.get_ready_markup(message.chat.id), parse_mode='Markdown')
-    days_request(message)
+        preparing_habits[message.chat.id] = {'label': message.text, 'days_of_week': []}
+
+        bot.send_message(message.chat.id,
+                         text,
+                         reply_markup=markups.get_ready_markup(message.chat.id),
+                         parse_mode='Markdown')
+        days_request(message)
 
 
 def language_request(message):
@@ -186,11 +200,9 @@ def location_request(message):
     user = User.get(message.chat.id)
 
     ru_text = 'Также мне нужно знать твой часовой пояс, чтобы проводить проверки вовремя.\n\n' \
-              'Только, пожалуйста, не надо тут разводить беспокойство о своих "персональных данных".' \
-              'Мне глубоко наплевать на твоё точное местоположение, просто так удобнее получить часовой пояс.'
-    en_text = 'I also need to find out what time zone you live in order to perform the checks on time.\n\n' \
-              "But please, don't worry about your “personal data”. " \
-              "I don't give a damn about your exact location, it's just more convenient to get a time zone."
+              'Можешь задать его вручную или просто поделиться местоположением.'
+    en_text = 'I also need to find out what timezone you live in order to perform the checks on time.\n\n' \
+              "You can specify timezone manually or just share location."
     text = ru_text if user.language_code == 'ru' else en_text
 
     bot.send_message(message.chat.id, text, reply_markup=markups.get_location_markup(message.chat.id))
@@ -210,6 +222,7 @@ def location_receive(message):
         bot.register_next_step_handler(message, timezone_receive)
     elif message.text == 'Specify manually':
         bot.send_message(message.chat.id, 'Choose your timezone', reply_markup=markups.get_timezone_markup())
+        bot.register_next_step_handler(message, timezone_receive)
     else:
         bot.register_next_step_handler(message, location_receive)
 
@@ -302,7 +315,7 @@ def promise_request(message):
               f'*💲{preparing_habits[message.chat.id]["fine"]}* за нарушение своего обещания."'
     en_text = f"It's time to commit:\n\n" \
               f'"I promise *{preparing_habits[message.chat.id]["label"]}*.' \
-              f'I will pay a *{preparing_habits[message.chat.id]["fine"]}* fine for breaking my promise."'
+              f'I will pay a *💲{preparing_habits[message.chat.id]["fine"]}* fine for breaking my promise."'
     text = ru_text if user.language_code == 'ru' else en_text
 
     bot.send_message(message.chat.id, text, reply_markup=markups.get_promise_markup(message.chat.id), parse_mode='Markdown')

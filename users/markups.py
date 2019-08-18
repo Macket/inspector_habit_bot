@@ -48,20 +48,22 @@ def get_habits_markup(user_id):
         types.KeyboardButton('Бросить курить'),
         types.KeyboardButton('Не тратить время на YouTube'),
         types.KeyboardButton('Регулярно заниматься спортом'),
-        types.KeyboardButton('Не тратить время Вконтакте'),
         types.KeyboardButton('Не зависать в Instagram'),
         types.KeyboardButton('Просыпаться раньше'),
         types.KeyboardButton('Регулярно читать книги'),
-        types.KeyboardButton('Сбросить вес'))
+        types.KeyboardButton('Сбросить вес'),
+        types.KeyboardButton('Другое...'),
+    )
     en_markup = types.ReplyKeyboardMarkup(row_width=1)
     en_markup.add(
         types.KeyboardButton('Quit smoking'),
         types.KeyboardButton("Don't waste time on YouTube"),
-        types.KeyboardButton("Don't waste time on Facebook"),
         types.KeyboardButton('Exercise regularly'),
         types.KeyboardButton('Wake up earlier'),
         types.KeyboardButton('Lose weight'),
-        types.KeyboardButton('Read books regularly'))
+        types.KeyboardButton('Read books regularly'),
+        types.KeyboardButton('Other...'),
+    )
     markup = ru_markup if user.language_code == 'ru' else en_markup
 
     return markup
@@ -114,7 +116,7 @@ def get_location_markup(user_id):
         types.KeyboardButton('Поделиться местоположением', request_location=True),
         types.KeyboardButton('Указать вручную'),
     )
-    en_markup = types.ReplyKeyboardMarkup()
+    en_markup = types.ReplyKeyboardMarkup(row_width=1)
     en_markup.add(
         types.KeyboardButton('Share location', request_location=True),
         types.KeyboardButton('Specify manually'),
