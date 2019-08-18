@@ -24,8 +24,9 @@ def feedback_request(message):
 
 def feedback_response(message):
     if message.text in ['❌ Отмена', '❌ Cancel']:
+        text = 'Хорошо' if message.text == '❌ Отмена' else 'Ok'
         bot.send_message(message.chat.id,
-                         'Хорошо',
+                         text,
                          reply_markup=markups.get_main_menu_markup(message.chat.id),
                          parse_mode='Markdown')
     else:
