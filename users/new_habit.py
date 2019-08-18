@@ -155,7 +155,12 @@ def fine_receive(message):
         preparing_habits[message.chat.id]['fine'] = int(message.text.split('💲')[1])
         promise_request(message)
     except (ValueError, IndexError):
-        bot.send_message(message.chat.id, 'Вы отправили что-то не то')
+        user = User.get(message.chat.id)
+        ru_text = 'Вы отправили что-то не то'
+        en_text = 'You sent something wrong'
+        text = ru_text if user.language_code == 'ru' else en_text
+
+        bot.send_message(message.chat.id, text)
         bot.register_next_step_handler(message, fine_receive)
 
 
