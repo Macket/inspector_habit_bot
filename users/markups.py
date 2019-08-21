@@ -12,6 +12,7 @@ def get_main_menu_markup(user_id):
         types.KeyboardButton('👨‍⚖️ Новая привычка с судьёй'),
         types.KeyboardButton('🗓 Мои привычки'),
         types.KeyboardButton('❗️ Мои нарушения'),
+        types.KeyboardButton('⚙️ Настройки'),
         types.KeyboardButton('🤨 Куда пойдут мои деньги?'),
         types.KeyboardButton('✉️ Написать разработчикам'),
     )
@@ -21,6 +22,7 @@ def get_main_menu_markup(user_id):
         types.KeyboardButton('👨‍⚖️ New habit with judge'),
         types.KeyboardButton('🗓 My habits'),
         types.KeyboardButton('❗ My violations'),
+        types.KeyboardButton('⚙️ Settings'),
         types.KeyboardButton('🤨 Where will my money go?'),
         types.KeyboardButton('✉️ Contact developers'),
     )
@@ -203,3 +205,23 @@ def get_judge_markup(user_id, habit_id):
     )
 
     return inline_markup
+
+
+def get_settings_markup(user_id):
+    user = User.get(user_id)
+
+    ru_markup = types.ReplyKeyboardMarkup(row_width=1)
+    ru_markup.add(
+        types.KeyboardButton('🇷🇺 Язык'),
+        types.KeyboardButton('🕒 Часовой пояс'),
+        types.KeyboardButton('❌ Отмена'),
+    )
+    en_markup = types.ReplyKeyboardMarkup(row_width=1)
+    en_markup.add(
+        types.KeyboardButton('🇬🇧 Language'),
+        types.KeyboardButton('🕒 Timezone'),
+        types.KeyboardButton('❌ Cancel'),
+    )
+    markup = ru_markup if user.language_code == 'ru' else en_markup
+
+    return markup

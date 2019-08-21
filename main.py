@@ -5,6 +5,7 @@ from bot import bot
 from users import intro
 from users import new_habit
 from users import contact_developers
+from users import settings
 from habits import handlers
 from fines import payment, handlers
 from users.utils import get_sticker_id
