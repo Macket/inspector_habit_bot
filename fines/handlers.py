@@ -37,7 +37,7 @@ def user_violations(message):
 
 @bot.message_handler(func=lambda message:
 message.text in ['🤨 Куда пойдут мои деньги?', '🤨 Where will my money go?'], content_types=['text'])
-def user_violations(message):
+def money_intention(message):
     user = User.get(message.chat.id)
 
     ru_text = '80% пойдут детишкам на интернет: https://giveinternet.org/\n\n' \
@@ -114,7 +114,7 @@ def handle_punishment_query(call):
                   'Просто перешли своему другу сообщение ниже👇'
         en_text = 'Invite a friend. When he follows your ' \
                   'link and assigns his first habit, ' \
-                  'all charges will be dropped.\n\n ' \
+                  'all charges will be dropped.\n\n' \
                   'Just forward to your friend the message below👇'
         text = ru_text if user.language_code == 'ru' else en_text
         bot.send_message(user.id, text)

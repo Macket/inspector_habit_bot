@@ -8,6 +8,7 @@ from habits.models import Habit
 from checks.utils import CheckStatus
 from checks import markups
 from fines.handlers import user_violations, user_violations_with_judge
+from fines.markups import get_punishment_markup
 import ast
 import random
 from users.utils import get_user_naming
@@ -181,18 +182,39 @@ def take_points_from_debtors():
     ''', (CheckStatus.SUCCESS.name,))[0]
 
     for debtor in debtors:
-        u = User.get(debtor[0])
-        u.score -= debtor[1]
-        u.save()
+        user = User.get(debtor[0])
+        user.score -= debtor[1]
+        user.save()
 
         ru_text = f'Должникам по долгам их!\n\nТвой долг по штрафам составляет *${debtor[1]}*\n\n*-{debtor[1]} очков*'
         en_text = f'Debtors must be punished!\n\nYour debt on fines *${debtor[1]}*\n\n*-{debtor[1]} points*'
-        text = ru_text if u.language_code == 'ru' else en_text
+        text = ru_text if user.language_code == 'ru' else en_text
 
         try:
-            bot.send_message(u.id, text, parse_mode='Markdown')
+            bot.send_message(user.id, text, parse_mode='Markdown')
         except Exception:
             pass
+
+        # TODO убрать дублирование с user_violations
+        violations = user.get_fines()
+
+        if violations:
+            ru_report = 'Ты обвиняешься в следующих нарушениях:\n\n'
+            en_report = 'You are charged with the following violations:\n\n'
+            report = ru_report if user.language_code == 'ru' else en_report
+
+            for violation in violations:
+                label = violation[0]
+                datetime_native = violation[1]
+                fine = violation[2]
+
+                report += f'_{datetime_native}_ {label} *${fine}*\n\n'
+                report += 'Выбери наказание' if user.language_code == 'ru' else 'Choose punishment'
+
+            bot.send_message(user.id,
+                             text=report,
+                             parse_mode='Markdown',
+                             reply_markup=get_punishment_markup(user.id))
 
 
 def rate_users():

@@ -100,8 +100,8 @@ def timezone_receive(message):
         user.timezone = tz
         user.save()
 
-        ru_text = f'Часовой пояс изменён на *{tz}*'
-        en_text = f'Timezone changed to *{tz}*'
+        ru_text = f'Часовой пояс изменён на *{message.text}*'
+        en_text = f'Timezone changed to *{message.text}*'
         text = ru_text if user.language_code == 'ru' else en_text
         bot.send_message(message.chat.id,
                          text,
