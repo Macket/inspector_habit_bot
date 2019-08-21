@@ -150,6 +150,8 @@ def handle_check_query(call):
                 pass
             user_violations(call.message)
 
+    suggest_new_habit(user, habit)
+
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('@@KICK_LAZY_ASS'))
 def handle_kick_lazy_ass_query(call):
@@ -308,4 +310,22 @@ def motivate_users_with_Jason_Statham():
             bot.send_message(user_id, quote, parse_mode='Markdown')
             bot.send_sticker(user_id, sticker)
         except Exception:
+            pass
+
+
+def suggest_new_habit(user, old_habit):
+    print(old_habit.get_remaining_checks())
+    if not old_habit.get_remaining_checks():
+        ru_text = f'Что ж, ты завершил работу над привычкой *{old_habit.label}*. ' \
+                  f'Пора назначить новую!'
+        en_text = f'Well, you finished the habit *{old_habit.label}*. ' \
+                  f"It's time to assign the new one!"
+        text = ru_text if user.language_code == 'ru' else en_text
+
+        try:
+            bot.send_message(user.id,
+                             text,
+                             reply_markup=markups.get_suggest_new_habit_markup(user.id),
+                             parse_mode='Markdown')
+        except:
             pass

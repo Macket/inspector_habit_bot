@@ -1,6 +1,7 @@
 import abc
 import ast
 from utils.database import execute_database_command
+from checks.utils import CheckStatus
 
 
 class Habit:
@@ -37,6 +38,12 @@ class Habit:
             self.id = habit_id
 
         return self
+
+    def get_remaining_checks(self):
+        return execute_database_command(
+            'SELECT id FROM checks WHERE habit_id = %s AND (status = %s OR status = %s)',
+            (self.id, CheckStatus.PENDING.value, CheckStatus.CHECKING.value)
+        )[0]
 
     def __str__(self):
         return f'{self.label if self.label else "No name"} (id: {self.id})'

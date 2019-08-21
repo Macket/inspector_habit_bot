@@ -19,11 +19,23 @@ def new_habit(message):
     habit_request(message)
 
 
+@bot.callback_query_handler(func=lambda call: call.data.startswith('@@NEW_HABIT_FROM_SUGGESTION'))
+def new_habit_from_suggestion(call):
+    preparing_habits[call.message.chat.id] = {'with_judge': False}
+    habit_request(call.message)
+
+
 @bot.message_handler(func=lambda message:
 message.text in ['👨‍⚖️ Новая привычка с судьёй', '👨‍⚖️ New habit with judge'], content_types=['text'])
-def new_habit(message):
+def new_habit_with_judge(message):
     preparing_habits[message.chat.id] = {'with_judge': True}
     habit_request(message)
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('@@NEW_HABIT_WITH_JUDGE_FROM_SUGGESTION'))
+def new_habit_with_judge_from_suggestion(call):
+    preparing_habits[call.message.chat.id] = {'with_judge': True}
+    habit_request(call.message)
 
 
 def habit_request(message):
@@ -35,24 +47,35 @@ def habit_request(message):
     text = ru_text if user.language_code == 'ru' else en_text
 
     bot.send_message(message.chat.id, text, reply_markup=markups.get_habits_markup(message.chat.id))
-    bot.register_next_step_handler(message, habit_response)
+    bot.register_next_step_handler(message, habit_receive)
 
 
-def habit_response(message):
+def habit_receive(message):
     user = User.get(message.chat.id)
 
-    ru_text = f'Итак, ты хочешь *{message.text}*'
-    en_text = f'So you want *{message.text}*'
-    text = ru_text if user.language_code == 'ru' else en_text
+    if message.text in ['Другое...', 'Other...']:
+        ru_text = 'Напиши привычку, над которой будем работать'
+        en_text = 'Write the habit we will work on'
+        text = ru_text if user.language_code == 'ru' else en_text
 
-    preparing_habits[message.chat.id]['label'] = message.text
-    preparing_habits[message.chat.id]['days_of_week'] = []
+        bot.send_message(message.chat.id,
+                         text,
+                         reply_markup=types.ReplyKeyboardRemove(),
+                         parse_mode='Markdown')
+        bot.register_next_step_handler(message, habit_receive)
+    else:
+        ru_text = f'Итак, ты хочешь *{message.text}*'
+        en_text = f'So you want *{message.text}*'
+        text = ru_text if user.language_code == 'ru' else en_text
 
-    bot.send_message(message.chat.id,
-                     text,
-                     reply_markup=markups.get_ready_markup(message.chat.id),
-                     parse_mode='Markdown')
-    days_request(message)
+        preparing_habits[message.chat.id]['label'] = message.text
+        preparing_habits[message.chat.id]['days_of_week'] = []
+
+        bot.send_message(message.chat.id,
+                         text,
+                         reply_markup=markups.get_ready_markup(message.chat.id),
+                         parse_mode='Markdown')
+        days_request(message)
 
 
 def days_request(message):

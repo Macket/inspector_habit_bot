@@ -40,3 +40,20 @@ def get_kick_lazy_ass_markup(judge_id, habit_id):
             callback_data='@@KICK_LAZY_ASS/' + str(habit_id)))
 
     return inline_markup
+
+
+def get_suggest_new_habit_markup(user_id):
+    user = User.get(user_id)
+    button1 = '🎯 Новая привычка' if user.language_code == 'ru' else '🎯 New habit'
+    button2 = '👨‍⚖️ Новая привычка с судьёй' if user.language_code == 'ru' else '👨‍⚖️ New habit with judge'
+    inline_markup = types.InlineKeyboardMarkup(row_width=1)
+    inline_markup.add(
+        types.InlineKeyboardButton(
+            text=button1,
+            callback_data='@@NEW_HABIT_FROM_SUGGESTION/' + str(user_id)),
+        types.InlineKeyboardButton(
+            text=button2,
+            callback_data='@@NEW_HABIT_WITH_JUDGE_FROM_SUGGESTION/' + str(user_id)),
+    )
+
+    return inline_markup
