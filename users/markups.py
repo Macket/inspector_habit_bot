@@ -225,3 +225,13 @@ def get_settings_markup(user_id):
     markup = ru_markup if user.language_code == 'ru' else en_markup
 
     return markup
+
+
+def get_language_confirm_markup():
+    markup = types.ReplyKeyboardMarkup(row_width=1)
+    markup.add(
+        types.KeyboardButton('🇷🇺Нет / 🇬🇧No'),
+        types.KeyboardButton('🇷🇺Да / 🇬🇧Yes'),
+    )
+
+    return markup

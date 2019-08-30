@@ -109,9 +109,26 @@ def language_response(message):
         # set user language
         user.language_code = 'ru' if message.text == '🇷🇺Русский' else 'en'
         user.save()
-        greeting_and_habit_request(message)
+        language_confirm_request(message)
     else:
         bot.register_next_step_handler(message, language_response)
+
+
+def language_confirm_request(message):
+    text = f'🇷🇺 Ты уверен, что хочешь выбрать *{message.text}*\n' \
+           f'🇬🇧 Are you sure you want to choose *{message.text}*'
+    bot.send_message(message.chat.id,
+                     text,
+                     reply_markup=markups.get_language_confirm_markup(),
+                     parse_mode='Markdown')
+    bot.register_next_step_handler(message, language_confirm_receive)
+
+
+def language_confirm_receive(message):
+    if message.text == '🇷🇺Да / 🇬🇧Yes':
+        greeting_and_habit_request(message)
+    else:
+        language_request(message)
 
 
 def days_request(message):
