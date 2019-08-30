@@ -213,10 +213,13 @@ def take_points_from_debtors():
                 report += f'_{datetime_native}_ {label} *${fine}*\n\n'
                 report += 'Выбери наказание' if user.language_code == 'ru' else 'Choose punishment'
 
-            bot.send_message(user.id,
-                             text=report,
-                             parse_mode='Markdown',
-                             reply_markup=get_punishment_markup(user.id))
+            try:
+                bot.send_message(user.id,
+                                 text=report,
+                                 parse_mode='Markdown',
+                                 reply_markup=get_punishment_markup(user.id))
+            except:
+                pass
 
 
 def rate_users():
