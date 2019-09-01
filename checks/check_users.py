@@ -15,9 +15,11 @@ from users.utils import get_user_naming
 
 
 ru_success_phrases = ['Красавчик👍', 'Хорооош👍', 'Еееее', 'Крутяк😊', 'Капитальный красавчик👍',
-                      'А я уже было подумал, что ты лентяй😂', 'Лучший!!!', 'Так держать👍']
+                      'А я уже было подумал, что ты лентяй😂', 'Лучший!!!', 'Так держать👍',
+                      'Ты мой герой!', 'Отлично!', 'Превосходно!', 'Потрясающе!', 'Молодец😊']
 en_success_phrases = ['Cool👍', 'You are pretty good👍', 'Yeah!!!', 'Best!',
-                      'And I already thought you were lazy😂', 'Keep it up👍']
+                      'And I already thought you were lazy😂', 'Keep it up👍',
+                      'You are my hero!', "That's famous!", 'Amazing!', 'Excellent!', 'Well done😊']
 
 success_stickers = ['CAADAgADawIAAsY4fgsDhbjMBJlV4AI',
                     'CAADAgADugIAAsY4fgu4uDPJXXphTgI',
@@ -28,7 +30,18 @@ success_stickers = ['CAADAgADawIAAsY4fgsDhbjMBJlV4AI',
                     'CAADBQADbwMAAukKyAOvzr7ZArpddBYE',
                     'CAADBQADzwMAAukKyAPJ6kGu2BGu0hYE',
                     'CAADAgADCgkAAgi3GQL7DdMy7QMLYhYE',
-                    'CAADAgADVgkAAgi3GQKZSn_np-jbNRYE']
+                    'CAADAgADVgkAAgi3GQKZSn_np-jbNRYE',
+                    'CAADAgADVwkAAnlc4gkrJAHADxlVXhYE',
+                    'CAADAgADZAkAAnlc4glT3Md3btp8xxYE',
+                    'CAADAgADUgkAAnlc4gmpyzM9cfT9bRYE',
+                    'CAADAgADRwkAAnlc4glEzGEDHvRUIxYE',
+                    'CAADAgADtAADE-ZSAYsRShmXoo2KFgQ',
+                    'CAADAgADAwEAAhPmUgE0HHgx5QQE7RYE',
+                    'CAADAgADjAEAAhPmUgFJjlJCoYeZRxYE',
+                    'CAADAgADggEAAhPmUgE4jJzPUhuF7BYE',
+                    'CAADAgADMgEAAhPmUgEAAbEB5sKeM0IWBA',
+                    'CAADAgADAQAD-SYsC4b7WF0nLgEDFgQ',
+                    'CAADAgADEgAD-SYsCxpyq2sL2n3QFgQ']
 
 fail_stickers = ['CAADAgADzwEAAvnkbAABsjFAs3iK3fgC',
                  'CAADAgADYQAD6u8-Cu07kxWOZDfKAg',
@@ -39,7 +52,21 @@ fail_stickers = ['CAADAgADzwEAAvnkbAABsjFAs3iK3fgC',
                  'CAADAgADEwkAAgi3GQKQqZ1Of22QNBYE',
                  'CAADAgADWwkAAgi3GQJorlW1m4id3xYE',
                  'CAADAgADhgADE-ZSAcQNAW3NGZOSFgQ',
-                 'CAADAgADjAgAAnlc4gmFDSBf_qyCOxYE']
+                 'CAADAgADjAgAAnlc4gmFDSBf_qyCOxYE',
+                 'CAADAgADvAIAAsY4fgusw6cK3xya4xYE',
+                 'CAADAgADtgIAAsY4fgtoKcACkLyMjBYE',
+                 'CAADAgADXwkAAgi3GQI8SrfepIj-PRYE',
+                 'CAADAgADEAkAAgi3GQIJJZ-tx4wBBhYE',
+                 'CAADAgADWQkAAnlc4glR4t3NMjFsvxYE',
+                 'CAADAgADYAkAAnlc4gklh0pDiK29HhYE',
+                 'CAADAgADVgkAAnlc4gnSP98suxvl5BYE',
+                 'CAADAgADWwkAAnlc4gnnPmwViEr1HxYE',
+                 'CAADAgADggADE-ZSAYPYhJ6WmsAZFgQ',
+                 'CAADAgADjgADE-ZSAUZHc1YbrCF1FgQ',
+                 'CAADAgADuAADE-ZSAa17TcXHlyEiFgQ',
+                 'CAADAgADIgEAAhPmUgHYQTmQAAHkpOUWBA',
+                 'CAADAgADNAEAAhPmUgGB12rl_ZSg0hYE',
+                 'CAADAgADkAEAAhPmUgECnD7KSrl78BYE']
 
 remind_stickers = ['CAADAgAD2AIAAsY4fgtkktnDjo_g_hYE',
                    'CAADAgADCwcAAnlc4gnFFPkWJcR13hYE',
@@ -281,7 +308,17 @@ Jason_Statham_quotes_ru = ['В любом процессе важна не ск�
                            'Успех — это способность шагать от одной неудачи к другой, не теряя энтузиазма.',
                            'Сокол высоко поднимается, когда летит против ветра, а не по ветру.',
                            'Глуп тот человек, который никогда не меняет своего мнения.',
-                           'Когда орлы молчат, болтают попугаи.']
+                           'Когда орлы молчат, болтают попугаи.',
+                           'На протяжении своей жизни каждому человеку доводится споткнуться о свой «великий шанс». К несчастью, большинство из нас просто подымается, отряхивается и идет дальше, как будто ничего и не произошло.',
+                           'Не желайте здоровья и богатства, а желайте удачи, ибо на Титанике все были богаты и здоровы, а удачливыми оказались единицы!',
+                           'Ложь успевает обойти полмира, пока правда одевает штаны.',
+                           'Хотите, чтобы в споре ваше слово было последним? Скажите оппоненту «Пожалуй, Вы правы».',
+                           'Мои вкусы просты. Я легко удовлетворяюсь наилучшим.',
+                           'Большое преимущество получает тот, кто достаточно рано сделал ошибки, на которых можно учиться.',
+                           'Величайший урок жизни в том, что и дураки бывают правы.',
+                           'Мы живем в эпоху больших событий и маленьких людей.',
+                           'От деревянных башмаков к деревянным башмакам — путь в четыре поколения: первое поколение наживает, второе — приумножает, третье — транжирит, четвертое — возвращается на фабрику.',
+                           'Ничем так не завоюешь авторитета, как спокойствием.']
 
 Jason_Statham_quotes_en = ["I've come from nowhere, and I'm not shy to go back.",
                            "You only get one shot in your life, and you might as well push yourself and try things.",
@@ -293,8 +330,18 @@ Jason_Statham_quotes_en = ["I've come from nowhere, and I'm not shy to go back."
                            "You have enemies? Good. That means you've stood up for something, sometime in your life.",
                            "Men occasionally stumble over the truth, but most of them pick themselves up and hurry off as if nothing ever happened",
                            "If you are going through hell, keep going.",
-                           "My tastes are simple: I am easily satisfied with the best",
-                           "History will be kind to me for I intend to write it."]
+                           "My tastes are simple: I am easily satisfied with the best.",
+                           "History will be kind to me for I intend to write it.",
+                           "Success is stumbling from failure to failure with no loss of enthusiasm.",
+                           "Tact is the ability to tell someone to go to hell in such a way that they look forward to the trip.",
+                           "Never, never, never give in!",
+                           "It is not enough that we do our best; sometimes we must do what is required.",
+                           "Nothing in life is so exhilarating as to be shot at without result.",
+                           "Kites rise highest against the wind, not with it.",
+                           "Never give in. Never give in. Never, never, never, never—in nothing, great or small, large or petty—never give in, except to convictions of honour and good sense. Never yield to force. Never yield to the apparently overwhelming might of the enemy.",
+                           "For myself I am an optimist - it does not seem to be much use to be anything else.",
+                           "Personally, I'm always ready to learn, although I do not always like being taught.",
+                           "A fanatic is one who can't change his mind and won't change the subject."]
 
 
 def motivate_users_with_Jason_Statham():
