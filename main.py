@@ -15,6 +15,7 @@ from checks.check_users import check_users, take_points_from_debtors, rate_users
 
 tl = Timeloop()
 last_check_utc = datetime.datetime.strptime(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M"), "%Y-%m-%d %H:%M")  # TODO поправить
+counter = 0
 
 
 @tl.job(interval=datetime.timedelta(minutes=1))
@@ -28,14 +29,19 @@ def take_points_from_debtors_job():
     take_points_from_debtors()
 
 
-@tl.job(interval=datetime.timedelta(hours=20))
-def motivate_users_with_Jason_Statham_job():
-    motivate_users_with_Jason_Statham()
+# @tl.job(interval=datetime.timedelta(hours=20))
+# def motivate_users_with_Jason_Statham_job():
+#     motivate_users_with_Jason_Statham()
 
 
 @tl.job(interval=datetime.timedelta(days=1))
 def rate_users_job():
-    rate_users()
+    global counter
+    if counter == 7:
+        counter = 0
+        rate_users()
+    else:
+        counter += 1
 
 
 init_database()
