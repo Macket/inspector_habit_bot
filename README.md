@@ -5,7 +5,7 @@ Inspector Habit is a Telegram bot which helps people to develop good habits and 
 
 ## Getting Started
 
-Paidagogos bot requires Python 3.7 and packages specified in ```requirements.txt```.
+Inspector Habit bot requires Python 3.7 and packages specified in ```requirements.txt```.
 
 You can install them with
 
@@ -13,7 +13,7 @@ You can install them with
 pip install -r requirements.txt
 ```
 
-Before you start Paidagogos it is necessary to create ```.env``` file:
+Before you start Inspector Habit it is necessary to create ```.env``` file:
 
 ```
 touch .env
