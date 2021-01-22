@@ -199,7 +199,7 @@ def handle_kick_lazy_ass_query(call):
         pass
 
     try:
-        bot.send_message(judge.id, 'Сделано!')
+        bot.send_message(judge.id, 'Сделано!' if user.language_code == 'ru' else 'Done!')
     except:
         pass
 

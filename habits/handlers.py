@@ -158,6 +158,7 @@ def register_judge(message):
                              first_name=message.from_user.first_name,
                              last_name=message.from_user.last_name,
                              language_code=message.from_user.language_code,
+                             # language_code="en",
                              timezone='UTC',
                              )
                 judge.save()
@@ -185,7 +186,7 @@ def register_judge(message):
             text_judge = ru_text_judge if judge.language_code == 'ru' else en_text_judge
 
             ru_text_user = f'{get_user_naming(judge, "Твой друг")} стал судьёй на привычке *{habit.label}*'
-            en_text_user = f'{get_user_naming(user, "Your friend")} became the judge on the habit *{habit.label}*'
+            en_text_user = f'{get_user_naming(judge, "Your friend")} became the judge on the habit *{habit.label}*'
             text_user = ru_text_user if user.language_code == 'ru' else en_text_user
 
             try:
@@ -208,6 +209,7 @@ def register_judge(message):
                              first_name=message.from_user.first_name,
                              last_name=message.from_user.last_name,
                              language_code=message.from_user.language_code,
+                             # language_code='en',
                              timezone='UTC',
                              )
                 judge.save()

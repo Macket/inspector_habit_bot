@@ -233,8 +233,8 @@ def promise_receive(message):
                   f'Время проверки: *{check_time}*\n' \
                   f'Длительность: *3 недели*\n\n' \
                   f'За каждый провал {get_user_naming(user, "твой друг")} обязуется заплатить тебе *${habit.fine}*'
-        en_text = f'{get_user_naming(user, "Your friend")} wants you' \
-                  f'to be the jadge on the habit *{habit.label}*.\n\n' \
+        en_text = f'{get_user_naming(user, "Your friend")} wants you ' \
+                  f'to be the judge on the habit *{habit.label}*.\n\n' \
                   f'Days of week: *{check_days}*\n' \
                   f'Checks time: *{check_time}*\n' \
                   f'Duration: *3 weeks*\n\n' \

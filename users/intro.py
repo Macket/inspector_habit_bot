@@ -23,6 +23,7 @@ def register(message):
                 first_name=message.from_user.first_name,
                 last_name=message.from_user.last_name,
                 language_code=message.from_user.language_code,
+                # language_code='en',
                 timezone='UTC',
                 referrer=referrer,
                 )
@@ -305,7 +306,7 @@ def money_intention_request(message):
               "He will monitor execution and kick you with my help. " \
               "And you will have to pay a fine to him in case of failure. \n\n" \
               "If you choose *charity*, then you will pay fines to me. " \
-              "And I will donate 80% of the money to the kids on the Internet: https://giveinternet.org"
+              "And I will donate (80% of the money) Internet access to students in need: https://giveinternet.org"
     text = ru_text if user.language_code == 'ru' else en_text
 
     bot.send_message(message.chat.id,
@@ -388,8 +389,8 @@ def promise_receive(message):
                   f'Время проверки: *{check_time}*\n' \
                   f'Длительность: *3 недели*\n\n' \
                   f'За каждый провал {get_user_naming(user, "твой друг")} обязуется заплатить тебе *${habit.fine}*'
-        en_text = f'{get_user_naming(user, "Your friend")} wants you' \
-                  f'to be the jadge on the habit *{habit.label}*.\n\n' \
+        en_text = f'{get_user_naming(user, "Your friend")} wants you ' \
+                  f'to be the judge on the habit *{habit.label}*.\n\n' \
                   f'Days of week: *{check_days}*\n' \
                   f'Checks time: *{check_time}*\n' \
                   f'Duration: *3 weeks*\n\n' \

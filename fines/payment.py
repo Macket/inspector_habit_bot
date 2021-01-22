@@ -103,11 +103,11 @@ def got_judge_payment_report(call):
     user.satisfy_fines(CheckStatus.JUSTIFIED.name, call.message.chat.id)
 
     ru_text_judge = f'Все штрафы {get_user_naming(user, "твоего друга")} погашены.'
-    en_text_judge = f'All fines of {get_user_naming(user, "your friend")} are repaid'
+    en_text_judge = f'All fines of {get_user_naming(user, "your friend")} are paid'
     text_judge = ru_text_judge if judge.language_code == 'ru' else en_text_judge
 
     ru_text_user = f'Все штрафы перед {get_user_naming(judge, "твоим другом")} погашены.'
-    en_text_user = f'All fines to {get_user_naming(user, "your friend")} are reapid.'
+    en_text_user = f'All fines to {get_user_naming(judge, "your friend")} are paid.'
     text_user = ru_text_user if user.language_code == 'ru' else en_text_user
 
     try:
