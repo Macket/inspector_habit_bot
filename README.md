@@ -63,7 +63,7 @@ python main.py
 
 ## Use case
 
-Let's see how [the Dude](https://en.wikipedia.org/wiki/The_Big_Lebowski) could discipline himself with Inspecter Habit and of course [Walter](https://en.wikipedia.org/wiki/The_Big_Lebowski).
+Let's see how [the Dude](https://en.wikipedia.org/wiki/The_Big_Lebowski) could discipline himself with Inspector Habit and of course [Walter](https://en.wikipedia.org/wiki/The_Big_Lebowski).
 
 First of all, the Dude starts Inspector Habit and assigns the habit he wants to develop.
 
